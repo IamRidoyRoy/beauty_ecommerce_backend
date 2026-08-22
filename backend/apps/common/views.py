@@ -1,23 +1,136 @@
 from django.conf import settings
 from django.core.management import call_command
+from django.db.models import Q
+from rest_framework import serializers
+from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
-from rest_framework import serializers
-from rest_framework.exceptions import PermissionDenied
-from apps.accounts.models import UserRole
-from .models import AnalyticsEvent
+from rest_framework.viewsets import ModelViewSet
+
+from apps.accounts.models import User, UserRole
+from apps.catalog.models import Product, ProductVariant
+from apps.inventory.models import Purchase, Supplier
+from apps.orders.models import Order
+from apps.promotions.models import Coupon
+from apps.shipping.models import Shipment
+from .models import AnalyticsEvent, CheckoutSettings
 from .permissions import role_permission
 from .responses import success
+
 class AnalyticsEventSerializer(serializers.ModelSerializer):
-    class Meta: model=AnalyticsEvent; fields=("event_type","session_token","cart_token","product_id_ref","metadata")
+    class Meta:
+        model=AnalyticsEvent
+        fields=('event_type','session_token','cart_token','product_id_ref','metadata')
+
 class AnalyticsEventView(APIView):
     permission_classes=[AllowAny]
     def post(self,request):
-        s=AnalyticsEventSerializer(data=request.data); s.is_valid(raise_exception=True); s.save(user=request.user if request.user.is_authenticated else None); return success(message="Event recorded.",status=201)
+        serializer=AnalyticsEventSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=request.user if request.user.is_authenticated else None)
+        return success(message='Event recorded.',status=201)
+
 DemoAdmin=role_permission(UserRole.SUPER_ADMIN,UserRole.ADMIN)
+ManagementAdmin=role_permission(UserRole.SUPER_ADMIN,UserRole.ADMIN,UserRole.MANAGER)
+StaffAdmin=role_permission(UserRole.SUPER_ADMIN,UserRole.ADMIN)
+SearchAdmin=role_permission(
+    UserRole.SUPER_ADMIN,UserRole.ADMIN,UserRole.MANAGER,UserRole.PRODUCT_MANAGER,
+    UserRole.INVENTORY_MANAGER,UserRole.ORDER_MANAGER,UserRole.CUSTOMER_SUPPORT,
+    UserRole.MARKETING_MANAGER,UserRole.FINANCE_MANAGER,
+)
+
 class DemoImportView(APIView):
     permission_classes=[DemoAdmin]
     def post(self,request):
-        if not settings.DEBUG: raise PermissionDenied("Demo import is available only in development.")
-        call_command("seed_full_demo")
-        return success(message="Demo data imported.")
+        if not settings.DEBUG:
+            raise PermissionDenied('Demo import is available only in development.')
+        call_command('seed_full_demo')
+        return success(message='Demo data imported.')
+
+class CheckoutSettingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=CheckoutSettings
+        fields=('id','existing_customer_otp_verification','created_at','updated_at')
+        read_only_fields=('id','created_at','updated_at')
+
+class CheckoutSettingsAdminView(APIView):
+    permission_classes=[ManagementAdmin]
+    def get_object(self):
+        obj,_=CheckoutSettings.objects.get_or_create(pk=1,defaults={'existing_customer_otp_verification':True})
+        return obj
+    def get(self,request):
+        return success(CheckoutSettingsSerializer(self.get_object()).data)
+    def patch(self,request):
+        obj=self.get_object(); serializer=CheckoutSettingsSerializer(obj,data=request.data,partial=True); serializer.is_valid(raise_exception=True); serializer.save()
+        return success(serializer.data,'Checkout settings updated.')
+
+class StaffUserSerializer(serializers.ModelSerializer):
+    password=serializers.CharField(write_only=True,required=False,allow_blank=False,min_length=8)
+    class Meta:
+        model=User
+        fields=('id','uuid','full_name','email','phone','role','is_active','is_staff','is_superuser','password','created_at','updated_at')
+        read_only_fields=('id','uuid','is_superuser','created_at','updated_at')
+    def validate_role(self,value):
+        if value==UserRole.CUSTOMER:
+            raise serializers.ValidationError('Customer role is not a staff dashboard role.')
+        return value
+    def create(self,validated_data):
+        password=validated_data.pop('password',None)
+        validated_data['is_staff']=True
+        user=User.objects.create_user(password=password,**validated_data)
+        return user
+    def update(self,instance,validated_data):
+        password=validated_data.pop('password',None)
+        if instance.is_superuser and 'role' in validated_data:
+            validated_data['role']=UserRole.SUPER_ADMIN
+        for key,value in validated_data.items():
+            setattr(instance,key,value)
+        instance.is_staff=True
+        if password:
+            instance.set_password(password)
+        instance.save()
+        return instance
+
+class StaffUserViewSet(ModelViewSet):
+    permission_classes=[StaffAdmin]
+    serializer_class=StaffUserSerializer
+    http_method_names=['get','post','patch','delete','head','options']
+    search_fields=('full_name','phone','email')
+    filterset_fields=('role','is_active')
+    ordering_fields=('created_at','full_name','role')
+    def get_queryset(self):
+        return User.objects.filter(is_staff=True).exclude(role=UserRole.CUSTOMER).order_by('-is_superuser','full_name','id')
+    def perform_destroy(self,instance):
+        if instance.pk==self.request.user.pk:
+            raise ValidationError({'user':'You cannot delete your own staff account.'})
+        if instance.is_superuser:
+            raise ValidationError({'user':'Superusers cannot be deleted from the dashboard.'})
+        instance.delete()
+
+class GlobalSearchView(APIView):
+    permission_classes=[SearchAdmin]
+    def get(self,request):
+        query=request.query_params.get('q','').strip()
+        if len(query)<2:
+            return success([])
+        results=[]
+        def add(type_,id_,title,subtitle,url):
+            if len(results)<30:
+                results.append({'type':type_,'id':id_,'title':title,'subtitle':subtitle or '', 'url':url})
+        for row in Order.objects.filter(Q(order_number__icontains=query)|Q(customer_name__icontains=query)|Q(customer_phone__icontains=query)|Q(items__sku_snapshot__icontains=query)).distinct().order_by('-created_at')[:6]:
+            add('order',row.id,row.order_number,f'{row.customer_name} · {row.customer_phone}',f'/sales/orders/{row.order_number}')
+        for row in User.objects.filter(role=UserRole.CUSTOMER).filter(Q(full_name__icontains=query)|Q(phone__icontains=query)|Q(email__icontains=query)).order_by('-id')[:5]:
+            add('customer',row.id,row.full_name or row.phone or row.email or f'Customer #{row.id}',row.phone or row.email or '',f'/customers/{row.id}')
+        for row in Product.objects.filter(Q(name__icontains=query)|Q(sku__icontains=query)|Q(barcode__icontains=query)|Q(variants__sku__icontains=query)).distinct().order_by('-id')[:6]:
+            add('product',row.id,row.name,row.sku or 'Variable product',f'/catalog/products/{row.id}/edit')
+        for row in ProductVariant.objects.select_related('product').filter(Q(sku__icontains=query)|Q(barcode__icontains=query)|Q(product__name__icontains=query)).order_by('-id')[:4]:
+            add('variant',row.id,row.sku,row.product.name,f'/catalog/variants?product={row.product_id}')
+        for row in Supplier.objects.filter(Q(name__icontains=query)|Q(phone__icontains=query)|Q(email__icontains=query))[:4]:
+            add('supplier',row.id,row.name,row.phone or row.email or '',f'/procurement/suppliers?search={query}')
+        for row in Purchase.objects.select_related('supplier').filter(Q(purchase_number__icontains=query)|Q(supplier_invoice__icontains=query)|Q(supplier__name__icontains=query)).order_by('-id')[:4]:
+            add('purchase',row.id,row.purchase_number,row.supplier.name,f'/procurement/purchases/{row.id}')
+        for row in Coupon.objects.filter(code__icontains=query)[:3]:
+            add('coupon',row.id,row.code,row.coupon_type,'/marketing/coupons')
+        for row in Shipment.objects.select_related('order').filter(Q(tracking_code__icontains=query)|Q(order__order_number__icontains=query)|Q(courier__icontains=query)).order_by('-id')[:4]:
+            add('shipment',row.id,row.tracking_code or f'Shipment #{row.id}',f'{row.courier} · {row.order.order_number}','/sales/shipments')
+        return success(results)

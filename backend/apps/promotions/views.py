@@ -19,4 +19,4 @@ class CouponValidateView(APIView):
         return success({"code":result["coupon"].code,"discount":str(result["discount"]),"free_shipping":result["free_shipping"]},"Coupon is valid.")
 Marketing=role_permission(UserRole.SUPER_ADMIN,UserRole.ADMIN,UserRole.MANAGER,UserRole.MARKETING_MANAGER)
 class CouponAdminViewSet(ModelViewSet): permission_classes=[Marketing]; serializer_class=CouponSerializer; queryset=Coupon.objects.prefetch_related("brands","categories","products","customers").all(); search_fields=("code",); filterset_fields=("coupon_type","active","first_order_only")
-class PromotionAdminViewSet(ModelViewSet): permission_classes=[Marketing]; serializer_class=PromotionSerializer; queryset=Promotion.objects.prefetch_related("brands","categories","products").all(); filterset_fields=("promotion_type","active","combinable")
+class PromotionAdminViewSet(ModelViewSet): permission_classes=[Marketing]; serializer_class=PromotionSerializer; queryset=Promotion.objects.prefetch_related("brands","categories","products").all(); filterset_fields=("promotion_type","active","combinable"); search_fields=("name","code"); ordering_fields=("priority","starts_at","ends_at")

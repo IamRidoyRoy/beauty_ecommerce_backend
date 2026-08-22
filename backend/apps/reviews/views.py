@@ -26,4 +26,4 @@ class ReviewViewSet(ModelViewSet):
         created=[ReviewImage.objects.create(review=review,image=f,order=review.images.count()+i) for i,f in enumerate(files)]
         return success(ReviewImageSerializer(created,many=True,context={"request":request}).data,"Review images uploaded.",201)
 ReviewAdmin=role_permission(UserRole.SUPER_ADMIN,UserRole.ADMIN,UserRole.MANAGER,UserRole.CUSTOMER_SUPPORT)
-class AdminReviewViewSet(ModelViewSet): permission_classes=[ReviewAdmin]; serializer_class=AdminReviewSerializer; queryset=Review.objects.select_related("user","product","order_item").prefetch_related("images").order_by("-id"); filterset_fields=("status","verified_purchase","product","rating")
+class AdminReviewViewSet(ModelViewSet): permission_classes=[ReviewAdmin]; serializer_class=AdminReviewSerializer; queryset=Review.objects.select_related("user","product","order_item").prefetch_related("images").order_by("-id"); filterset_fields=("status","verified_purchase","product","rating"); search_fields=("product__name","user__full_name","user__phone","title","comment"); ordering_fields=("created_at","rating")

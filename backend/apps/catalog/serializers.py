@@ -23,13 +23,24 @@ class VariantSerializer(serializers.ModelSerializer):
     class Meta: model=ProductVariant; fields=("id","uuid","product","sku","barcode","price_override","selling_price","weight","is_active","available_stock","attributes")
 class ProductImageSerializer(serializers.ModelSerializer):
     class Meta: model=ProductImage; fields=("id","product","variant","image","image_type","alt_text","order","is_primary")
+
+    def to_representation(self, instance):
+        # Keep media URLs host-agnostic. The storefront/dashboard can then resolve
+        # /media/... against the configured Django origin on localhost, LAN or CDN.
+        data = super().to_representation(instance)
+        data["image"] = instance.image.url if instance.image else None
+        return data
+
     def validate(self, attrs):
         product=attrs.get("product") or getattr(self.instance,"product",None); variant=attrs.get("variant") or getattr(self.instance,"variant",None)
         if variant and product and variant.product_id!=product.id: raise serializers.ValidationError({"variant":"Variant must belong to product."})
         return attrs
     def create(self,validated_data):
+        scope=ProductImage.objects.filter(product=validated_data["product"],variant=validated_data.get("variant"))
         if validated_data.get("is_primary"):
-            ProductImage.objects.filter(product=validated_data["product"],variant=validated_data.get("variant"),is_primary=True).update(is_primary=False)
+            scope.filter(is_primary=True).update(is_primary=False)
+        elif not scope.filter(is_primary=True).exists():
+            validated_data["is_primary"]=True
         return super().create(validated_data)
     def update(self,instance,validated_data):
         if validated_data.get("is_primary"):
@@ -65,6 +76,8 @@ class ProductDetailSerializer(ProductListSerializer):
     def get_claims(self,obj): return ProductClaimSerializer([pc for pc in obj.product_claims.all() if pc.active],many=True).data
 
 class ProductAdminSerializer(serializers.ModelSerializer):
+    images = ProductImageSerializer(many=True, read_only=True)
+
     class Meta: model=Product; fields="__all__"; read_only_fields=("uuid","published_at")
     def validate(self,attrs):
         ptype=attrs.get("product_type",getattr(self.instance,"product_type",None)); sku=attrs.get("sku",getattr(self.instance,"sku",None)); status=attrs.get("status",getattr(self.instance,"status",Product.Status.DRAFT))
@@ -102,3 +115,13 @@ class ProductClaimAdminSerializer(serializers.ModelSerializer):
     class Meta: model=ProductClaim; fields="__all__"
 class BeautyProfileAdminSerializer(serializers.ModelSerializer):
     class Meta: model=ProductBeautyProfile; fields="__all__"
+
+
+class SkinTypeAdminSerializer(serializers.ModelSerializer):
+    class Meta: model=SkinType; fields="__all__"
+class HairTypeAdminSerializer(serializers.ModelSerializer):
+    class Meta: model=HairType; fields="__all__"
+class ConcernAdminSerializer(serializers.ModelSerializer):
+    class Meta: model=Concern; fields="__all__"
+class IngredientAdminSerializer(serializers.ModelSerializer):
+    class Meta: model=Ingredient; fields="__all__"

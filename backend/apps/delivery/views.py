@@ -86,12 +86,14 @@ DeliveryAdmin = role_permission(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.M
 
 
 class AdminDeliveryModuleViewSet(ModelViewSet):
+    pagination_class = None
     permission_classes = [DeliveryAdmin]
     serializer_class = DeliveryModuleSerializer
     queryset = DeliveryModule.objects.all().order_by("sort_order", "id")
 
 
 class AdminDistrictViewSet(ModelViewSet):
+    pagination_class = None
     permission_classes = [DeliveryAdmin]
     serializer_class = AdminCitySerializer
     queryset = City.objects.select_related("delivery_module").all().order_by("name")
@@ -100,6 +102,7 @@ class AdminDistrictViewSet(ModelViewSet):
 
 
 class AdminThanaViewSet(ModelViewSet):
+    pagination_class = None
     permission_classes = [DeliveryAdmin]
     serializer_class = AdminThanaSerializer
     queryset = Thana.objects.select_related("city", "delivery_module").all().order_by("city__name", "name")

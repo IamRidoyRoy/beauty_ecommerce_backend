@@ -1,8 +1,9 @@
-from datetime import timedelta
+from datetime import timedelta, datetime, time
 from decimal import Decimal
 from django.db.models import Sum,Count,Avg,F,Q,Case,When,Value,DecimalField,IntegerField,ExpressionWrapper,Exists,OuterRef,Subquery,Min
 from django.db.models.functions import TruncDate,Coalesce
 from django.utils import timezone
+from django.utils.dateparse import parse_datetime, parse_date
 from apps.orders.models import Order,OrderItem
 from apps.catalog.models import Product,Category,Brand
 from apps.inventory.models import ProductStock,StockMovement
@@ -13,11 +14,33 @@ from apps.promotions.models import Coupon,CouponUsage
 from apps.common.models import AnalyticsEvent
 
 def _range(params):
-    end=timezone.now(); start=end-timedelta(days=int(params.get("days",30))); return start,end
+    end=timezone.now(); start=None
+    raw_start=params.get("start") or params.get("date_from"); raw_end=params.get("end") or params.get("date_to")
+    if raw_start:
+        parsed=parse_datetime(str(raw_start))
+        if parsed is None:
+            d=parse_date(str(raw_start)); parsed=timezone.make_aware(datetime.combine(d,time.min)) if d else None
+        start=parsed
+    if raw_end:
+        parsed=parse_datetime(str(raw_end))
+        if parsed is None:
+            d=parse_date(str(raw_end)); parsed=timezone.make_aware(datetime.combine(d,time.max)) if d else None
+        if parsed: end=parsed
+    if start is None: start=end-timedelta(days=int(params.get("days",30) or 30))
+    return start,end
 
 def dashboard(params):
-    start,end=_range(params); orders=Order.objects.filter(created_at__range=(start,end)); paid=orders.filter(payment_status=Order.PaymentStatus.PAID)
-    return {"orders":orders.count(),"revenue":paid.aggregate(v=Coalesce(Sum("total"),Decimal("0")))["v"],"aov":paid.aggregate(v=Coalesce(Avg("total"),Decimal("0")))["v"],"customers":User.objects.filter(role=UserRole.CUSTOMER,created_at__range=(start,end)).count(),"pending_orders":Order.objects.filter(order_status=Order.Status.PENDING).count(),"low_stock_rows":ProductStock.objects.filter(available_stock__lte=F("low_stock_threshold")).count()}
+    start,end=_range(params); orders=Order.objects.filter(created_at__range=(start,end)); valid=orders.exclude(order_status=Order.Status.CANCELLED); paid=valid.filter(payment_status=Order.PaymentStatus.PAID)
+    item_qs=OrderItem.objects.filter(order__in=valid)
+    revenue=paid.aggregate(v=Coalesce(Sum("total"),Decimal("0")))["v"]
+    aov=paid.aggregate(v=Coalesce(Avg("total"),Decimal("0")))["v"]
+    units=item_qs.aggregate(v=Coalesce(Sum("quantity"),0))["v"]
+    cogs=item_qs.aggregate(v=Coalesce(Sum(ExpressionWrapper(F("cost_price_snapshot")*F("quantity"),output_field=DecimalField(max_digits=18,decimal_places=2))),Decimal("0")))["v"]
+    discounts=valid.aggregate(v=Coalesce(Sum("discount"),Decimal("0")))["v"]
+    product_revenue=item_qs.aggregate(v=Coalesce(Sum("total"),Decimal("0")))["v"]
+    refund_impact=Refund.objects.filter(status=Refund.Status.COMPLETED,created_at__range=(start,end)).aggregate(v=Coalesce(Sum("amount"),Decimal("0")))["v"]
+    gross_profit=product_revenue-discounts-cogs-refund_impact
+    return {"orders":orders.count(),"revenue":revenue,"aov":aov,"units_sold":units,"gross_profit":gross_profit,"customers":User.objects.filter(role=UserRole.CUSTOMER,created_at__range=(start,end)).count(),"pending_orders":Order.objects.filter(order_status=Order.Status.PENDING).count(),"return_requests":ReturnRequest.objects.filter(status=ReturnRequest.Status.REQUESTED).count(),"low_stock_rows":ProductStock.objects.filter(available_stock__lte=F("low_stock_threshold"),available_stock__gt=0).count(),"out_of_stock_rows":ProductStock.objects.filter(available_stock__lte=0).count()}
 def sales(params):
     start,end=_range(params); return list(Order.objects.filter(created_at__range=(start,end)).exclude(order_status=Order.Status.CANCELLED).annotate(day=TruncDate("created_at")).values("day").annotate(orders=Count("id"),sales=Sum("total"),discount=Sum("discount"),shipping=Sum("shipping_charge"),tax=Sum("tax")).order_by("day"))
 def orders(params):
@@ -66,5 +89,5 @@ def profit(params):
     order_fin=Order.objects.filter(created_at__range=(start,end)).exclude(order_status=Order.Status.CANCELLED).aggregate(discounts=Coalesce(Sum("discount"),Decimal("0")))
     refund_total=Refund.objects.filter(status=Refund.Status.COMPLETED,created_at__range=(start,end)).aggregate(v=Coalesce(Sum("amount"),Decimal("0")))["v"]
     net=item_fin["product_revenue"]-order_fin["discounts"]; gross=net-item_fin["cogs"]-refund_total
-    return {"product_revenue":item_fin["product_revenue"],"discounts":order_fin["discounts"],"net_product_revenue":net,"cogs":item_fin["cogs"],"refund_impact":refund_total,"gross_profit":gross}
+    return {"product_revenue":item_fin["product_revenue"],"discounts":order_fin["discounts"],"net_product_revenue":net,"cogs":item_fin["cogs"],"refund_impact":refund_total,"gross_profit":gross,"margin_percentage":(gross/net*Decimal("100")) if net else Decimal("0")}
 REPORTS={"sales":sales,"orders":orders,"product-performance":product_performance,"category-performance":category_performance,"brand-performance":brand_performance,"inventory":inventory,"stock-aging":stock_aging,"dead-stock":dead_stock,"low-performing-products":low_performing,"best-sellers":best_sellers,"customers":customers,"customer-lifetime-value":customer_lifetime_value,"payments":payments,"returns":returns,"refunds":refunds,"discounts":discounts,"coupon-performance":coupon_performance,"sales-geography":sales_geography,"funnel":funnel,"profit":profit}

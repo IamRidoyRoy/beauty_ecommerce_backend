@@ -1,3 +1,6 @@
+from django.utils.dateparse import parse_date
+from django.db.models import Count, Sum, Avg, Max, DecimalField, Value
+from django.db.models.functions import Coalesce
 from rest_framework.permissions import AllowAny,IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.viewsets import ReadOnlyModelViewSet,ModelViewSet
@@ -9,7 +12,7 @@ from apps.common.responses import success
 from apps.carts.services import get_request_cart
 from apps.common.models import AnalyticsEvent
 from .models import Order
-from .serializers import CheckoutSerializer,OrderSerializer,AdminOrderSerializer,OrderTransitionSerializer
+from .serializers import CheckoutSerializer,OrderSerializer,AdminOrderSerializer,OrderTransitionSerializer,AdminCustomerListSerializer,AdminCustomerDetailSerializer
 from .services import checkout,transition_order
 class CheckoutView(APIView):
     permission_classes=[AllowAny]
@@ -36,7 +39,14 @@ class AdminOrderViewSet(ReadOnlyModelViewSet):
         classes=[OrderWriteAdmin] if self.action=="transition" else [OrderReadAdmin]
         return [permission() for permission in classes]
     queryset=Order.objects.select_related("user","shipping_method").prefetch_related("items__product","items__variant","payments","shipments").order_by("-created_at")
-    filterset_fields=("order_status","payment_status","fulfillment_status","shipping_method"); search_fields=("order_number","customer_name","customer_phone","items__sku_snapshot"); ordering_fields=("created_at","total")
+    filterset_fields=("order_status","payment_status","fulfillment_status","shipping_method"); search_fields=("order_number","customer_name","customer_phone","items__sku_snapshot","shipments__tracking_code","shipments__courier"); ordering_fields=("created_at","total")
+    def get_queryset(self):
+        qs=super().get_queryset(); start=parse_date(self.request.query_params.get("date_from", "")); end=parse_date(self.request.query_params.get("date_to", ""))
+        if start: qs=qs.filter(created_at__date__gte=start)
+        if end: qs=qs.filter(created_at__date__lte=end)
+        courier=self.request.query_params.get("courier")
+        if courier: qs=qs.filter(shipments__courier__iexact=courier)
+        return qs.distinct()
     @action(detail=True,methods=["post"])
     def transition(self,request,order_number=None):
         s=OrderTransitionSerializer(data=request.data); s.is_valid(raise_exception=True); new_status=s.validated_data["new_status"]
@@ -50,5 +60,43 @@ class AdminOrderViewSet(ReadOnlyModelViewSet):
         return success(data)
 CustomerAdmin=role_permission(UserRole.SUPER_ADMIN,UserRole.ADMIN,UserRole.MANAGER,UserRole.CUSTOMER_SUPPORT)
 class AdminCustomerViewSet(ReadOnlyModelViewSet):
-    permission_classes=[CustomerAdmin]; serializer_class=UserSerializer
-    queryset=User.objects.filter(role=UserRole.CUSTOMER).prefetch_related("orders","addresses").order_by("-created_at"); search_fields=("full_name","phone","email")
+    permission_classes=[CustomerAdmin]
+    search_fields=("full_name","phone","email")
+    filterset_fields=("is_active",)
+    ordering_fields=("created_at","full_name","phone","orders_count","lifetime_spend","average_order","last_order")
+
+    def get_serializer_class(self):
+        return AdminCustomerDetailSerializer if self.action == "retrieve" else AdminCustomerListSerializer
+
+    def get_queryset(self):
+        money_field=DecimalField(max_digits=16,decimal_places=2)
+        qs=(User.objects.filter(role=UserRole.CUSTOMER)
+            .annotate(
+                orders_count=Count("orders",distinct=True),
+                lifetime_spend=Coalesce(Sum("orders__total"),Value(0),output_field=money_field),
+                average_order=Coalesce(Avg("orders__total"),Value(0),output_field=money_field),
+                last_order=Max("orders__created_at"),
+            )
+            .prefetch_related(
+                "addresses",
+                "orders__items",
+                "orders__payments",
+                "orders__shipping_method",
+                "orders__refunds",
+                "return_requests__order",
+                "reviews__product",
+                "wishlist_items__product",
+            )
+            .order_by("-created_at"))
+        return qs
+
+    @action(detail=True,methods=["patch"],url_path="status")
+    def status(self,request,pk=None):
+        customer=self.get_object()
+        value=request.data.get("is_active")
+        if not isinstance(value,bool):
+            from rest_framework.exceptions import ValidationError
+            raise ValidationError({"is_active":"A boolean value is required."})
+        customer.is_active=value
+        customer.save(update_fields=["is_active","updated_at"])
+        return success(self.get_serializer(customer).data,"Customer status updated.")

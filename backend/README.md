@@ -212,3 +212,25 @@ After updating an existing project, create/apply the new model migration:
 python manage.py makemigrations common
 python manage.py migrate
 ```
+
+## Product image workflow
+
+The catalog supports multiple product and variant images. Exactly one image in each gallery scope can be marked `is_primary=true`.
+
+Dashboard bulk upload:
+
+```http
+POST /api/v1/admin/images/bulk-upload/
+Content-Type: multipart/form-data
+
+product=<product id>
+variant=<optional variant id>
+primary_index=0
+images=<file 1>
+images=<file 2>
+...
+```
+
+`primary_index` is zero-based within the uploaded files and becomes the storefront Feature Image for a base product gallery (or the primary image for a variant gallery). If the first gallery has no primary image and `primary_index` is omitted, the first uploaded image is promoted automatically. Deleting the current primary image promotes the next image in gallery order.
+
+Uploaded media is served from `MEDIA_URL=/media/` in development. The customer storefront should point `NEXT_PUBLIC_API_BASE_URL` at this Django host; media defaults to the same host automatically.

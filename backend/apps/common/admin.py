@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.db import OperationalError, ProgrammingError
 
 from apps.common.admin_utils import register_app_models
 from .models import CheckoutSettings
@@ -10,7 +11,11 @@ class CheckoutSettingsAdmin(admin.ModelAdmin):
     fields = ("existing_customer_otp_verification",)
 
     def has_add_permission(self, request):
-        return not CheckoutSettings.objects.exists()
+        try:
+            return not CheckoutSettings.objects.exists()
+        except (OperationalError, ProgrammingError):
+            # Keep the admin index usable before a newly added migration is applied.
+            return False
 
     def has_delete_permission(self, request, obj=None):
         return False

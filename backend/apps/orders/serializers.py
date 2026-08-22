@@ -91,3 +91,94 @@ class AdminOrderSerializer(serializers.ModelSerializer):
 
 class OrderTransitionSerializer(serializers.Serializer):
     new_status = serializers.ChoiceField(choices=Order.Status.choices)
+
+# Management customer serializers -------------------------------------------------
+# Kept in the orders app because the commercial customer metrics are order-derived.
+from apps.accounts.models import User
+from apps.accounts.serializers import AddressSerializer
+
+
+class AdminCustomerListSerializer(serializers.ModelSerializer):
+    orders_count = serializers.IntegerField(read_only=True)
+    lifetime_spend = serializers.DecimalField(max_digits=16, decimal_places=2, read_only=True)
+    average_order = serializers.DecimalField(max_digits=16, decimal_places=2, read_only=True)
+    last_order = serializers.DateTimeField(read_only=True, allow_null=True)
+
+    class Meta:
+        model = User
+        fields = (
+            "id", "uuid", "full_name", "phone", "email", "is_active", "created_at",
+            "orders_count", "lifetime_spend", "average_order", "last_order",
+        )
+
+
+class AdminCustomerDetailSerializer(AdminCustomerListSerializer):
+    addresses = AddressSerializer(many=True, read_only=True)
+    orders = OrderSerializer(many=True, read_only=True)
+    returns = serializers.SerializerMethodField()
+    refunds = serializers.SerializerMethodField()
+    reviews = serializers.SerializerMethodField()
+    wishlist = serializers.SerializerMethodField()
+
+    class Meta(AdminCustomerListSerializer.Meta):
+        fields = AdminCustomerListSerializer.Meta.fields + (
+            "gender", "date_of_birth", "email_verified", "phone_verified",
+            "addresses", "orders", "returns", "refunds", "reviews", "wishlist",
+        )
+
+    def get_returns(self, obj):
+        rows = getattr(obj, "return_requests", None)
+        if rows is None:
+            return []
+        return [
+            {
+                "id": row.id,
+                "order": row.order_id,
+                "order_number": row.order.order_number if getattr(row, "order", None) else "",
+                "reason": row.reason,
+                "status": row.status,
+                "created_at": row.created_at,
+            }
+            for row in rows.all()
+        ]
+
+    def get_refunds(self, obj):
+        result = []
+        for order in obj.orders.all():
+            for row in order.refunds.all():
+                result.append({
+                    "id": row.id,
+                    "order": order.id,
+                    "order_number": order.order_number,
+                    "amount": row.amount,
+                    "reason": row.reason,
+                    "status": row.status,
+                    "created_at": row.created_at,
+                })
+        return result
+
+    def get_reviews(self, obj):
+        return [
+            {
+                "id": row.id,
+                "product": row.product_id,
+                "product_name": row.product.name if getattr(row, "product", None) else "",
+                "rating": row.rating,
+                "title": row.title,
+                "comment": row.comment,
+                "status": row.status,
+                "verified_purchase": row.verified_purchase,
+                "created_at": row.created_at,
+            }
+            for row in obj.reviews.all()
+        ]
+
+    def get_wishlist(self, obj):
+        return [
+            {
+                "id": row.id,
+                "product": row.product_id,
+                "product_name": row.product.name if getattr(row, "product", None) else "",
+            }
+            for row in obj.wishlist_items.all()
+        ]

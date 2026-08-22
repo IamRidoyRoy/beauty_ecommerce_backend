@@ -76,11 +76,15 @@ def consume_reserved_stock(*,reference_type,reference_id,created_by=None):
     return reservations
 
 @transaction.atomic
-def adjust_stock(*,stock_item,warehouse,new_quantity,note,created_by=None):
-    if new_quantity<0: raise ValidationError({"new_quantity":"Cannot be negative."})
+def adjust_stock(*,stock_item,warehouse,new_quantity=None,mode="set",quantity=None,note="Stock adjustment",created_by=None):
     stock,_=ProductStock.objects.select_for_update().get_or_create(stock_item=stock_item,warehouse=warehouse)
-    before=stock.available_stock; delta=new_quantity-before; stock.available_stock=new_quantity; stock.save(update_fields=["available_stock","updated_at"])
-    _movement(stock,StockMovement.Type.ADJUSTMENT,delta,before,new_quantity,"adjustment",stock.pk,note,created_by); return stock
+    before=stock.available_stock
+    if mode=="increase": target=before+int(quantity or 0)
+    elif mode=="decrease": target=before-int(quantity or 0)
+    else: target=int(new_quantity if new_quantity is not None else before)
+    if target<0: raise ValidationError({"quantity":"Adjustment cannot make available stock negative."})
+    delta=target-before; stock.available_stock=target; stock.save(update_fields=["available_stock","updated_at"])
+    _movement(stock,StockMovement.Type.ADJUSTMENT,delta,before,target,"adjustment",stock.pk,note,created_by); return stock
 
 @transaction.atomic
 def transfer_stock(*,stock_item,source_warehouse,destination_warehouse,quantity,created_by=None,note=""):

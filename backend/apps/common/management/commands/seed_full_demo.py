@@ -12,6 +12,7 @@ from apps.inventory.services import resolve_stock_item,increase_stock,receive_pu
 from apps.carts.models import Cart
 from apps.carts.services import add_cart_item
 from apps.shipping.models import ShippingMethod
+from apps.delivery.models import DeliveryModule, City, Thana
 from apps.orders.services import checkout,transition_order
 from apps.orders.models import Order
 from apps.payments.services import mark_payment_paid
@@ -104,13 +105,17 @@ class Command(BaseCommand):
         Coupon.objects.create(code="DEMO10",coupon_type=Coupon.Type.PERCENTAGE,value=Decimal("10"),minimum_spend=Decimal("1000"),usage_limit=100,active=True)
         Promotion.objects.create(name="Demo Skincare 5%",promotion_type=Promotion.Type.CATEGORY,active=True,priority=50,combinable=True,config={"percent":5})
         promo=Promotion.objects.get(name="Demo Skincare 5%"); promo.categories.add(roots["Skincare"])
+        # Demo delivery geography. Full production geography can be imported with: python manage.py import_delivery_data
+        inside,_=DeliveryModule.objects.get_or_create(code=DeliveryModule.Code.INSIDE_DHAKA,defaults={"name":"Inside Dhaka","charge":Decimal("60.00"),"sort_order":10})
+        demo_city,_=City.objects.get_or_create(name="Dhaka",defaults={"delivery_module":inside,"active":True})
+        demo_thana,_=Thana.objects.get_or_create(city=demo_city,name="Dhanmondi",defaults={"active":True})
         # Customers + delivered orders using real cart/checkout/stock services
         delivered=[]
         for idx in range(4):
             user=User.objects.create_user(phone=f"0179000000{idx}",password="Customer123!",full_name=f"Demo Customer {idx+1}")
             cart=Cart.objects.create(user=user); target=products[idx]; add_cart_item(cart=cart,product=target,quantity=2 if idx==0 else 1)
             if idx%2==0: add_cart_item(cart=cart,product_variant=variants[idx],quantity=1)
-            result=checkout(cart=cart,customer_data={"name":user.full_name,"phone":user.phone,"district":"Dhaka","thana":"Dhanmondi","address":f"Demo House {idx+1}, Road 5","label":"Home"},shipping_method=ship,payment_method="cod",coupon_code="DEMO10" if idx==0 else "",request_user=user)
+            result=checkout(cart=cart,customer_data={"name":user.full_name,"phone":user.phone,"district":demo_city,"thana":demo_thana,"address":f"Demo House {idx+1}, Road 5","label":"Home"},shipping_method=ship,payment_method="cod",coupon_code="DEMO10" if idx==0 else "",request_user=user)
             order=result["order"]
             for status in [Order.Status.CONFIRMED,Order.Status.PROCESSING,Order.Status.PACKED,Order.Status.READY_TO_SHIP,Order.Status.SHIPPED,Order.Status.OUT_FOR_DELIVERY,Order.Status.DELIVERED]: order=transition_order(order=order,new_status=status,actor=admin)
             payment=order.payments.first(); mark_payment_paid(payment=payment,transaction_id=f"DEMO-TXN-{idx+1}")

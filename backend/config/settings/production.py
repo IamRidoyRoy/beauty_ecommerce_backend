@@ -18,3 +18,6 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_REFERRER_POLICY = "same-origin"
 X_FRAME_OPTIONS = "DENY"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+# Never issue an existing customer JWT from phone knowledge alone in production.
+ALLOW_INSECURE_EXISTING_CUSTOMER_AUTO_LOGIN = False

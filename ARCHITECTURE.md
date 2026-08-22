@@ -289,3 +289,19 @@ Error:
 ```
 
 DRF field-level error objects are preserved inside `errors`.
+
+## Delivery geography extension
+
+```text
+DeliveryModule
+├── inside_dhaka  → ৳60
+├── subarea       → ৳90
+└── outside_dhaka → ৳120
+
+City/District ──> default DeliveryModule
+    └── Thana ──> optional DeliveryModule override
+```
+
+Checkout submits district/thana IDs. The backend validates the parent-child relationship, resolves a server-side delivery quote, and stores district/thana names plus delivery-module metadata in the order's shipping-address snapshot. The source city/thana fixture files are bundled under `apps/delivery/data/` and imported with `python manage.py import_delivery_data`.
+
+An anonymous checkout with an existing phone is allowed. It is linked to the existing customer account for order history but never returns authentication tokens; unauthenticated checkout also does not modify that account's saved address book.

@@ -1,0 +1,6282 @@
+[
+    {
+        "model": "delivery.thana",
+        "pk": 1,
+        "fields": {
+            "city": 1,
+            "name": "Gulshan"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 2,
+        "fields": {
+            "city": 1,
+            "name": "Rampura"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 3,
+        "fields": {
+            "city": 1,
+            "name": "Khilgaon"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 4,
+        "fields": {
+            "city": 1,
+            "name": "Sabujbag"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 5,
+        "fields": {
+            "city": 1,
+            "name": "Shahjahanpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 6,
+        "fields": {
+            "city": 1,
+            "name": "Ramna thana"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 7,
+        "fields": {
+            "city": 1,
+            "name": "Tejgaon"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 8,
+        "fields": {
+            "city": 1,
+            "name": "Banani"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 9,
+        "fields": {
+            "city": 1,
+            "name": "Vatara"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 10,
+        "fields": {
+            "city": 1,
+            "name": "Ashulia"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 11,
+        "fields": {
+            "city": 1,
+            "name": "Mohammadpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 12,
+        "fields": {
+            "city": 1,
+            "name": "Newmarket"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 13,
+        "fields": {
+            "city": 1,
+            "name": "Adabar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 14,
+        "fields": {
+            "city": 1,
+            "name": "Shahbag"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 15,
+        "fields": {
+            "city": 1,
+            "name": "Kalabagan"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 16,
+        "fields": {
+            "city": 1,
+            "name": "Sher e bangla nagar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 17,
+        "fields": {
+            "city": 1,
+            "name": "Dhanmondi"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 18,
+        "fields": {
+            "city": 1,
+            "name": "Hazaribag"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 19,
+        "fields": {
+            "city": 1,
+            "name": "Lalbag"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 20,
+        "fields": {
+            "city": 1,
+            "name": "Chawkbazar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 21,
+        "fields": {
+            "city": 1,
+            "name": "Kamrangirchor"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 22,
+        "fields": {
+            "city": 1,
+            "name": "Motijheel"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 23,
+        "fields": {
+            "city": 1,
+            "name": "Jattrabari"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 24,
+        "fields": {
+            "city": 1,
+            "name": "Demra"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 25,
+        "fields": {
+            "city": 1,
+            "name": "Paltan"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 26,
+        "fields": {
+            "city": 1,
+            "name": "Mugda"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 27,
+        "fields": {
+            "city": 1,
+            "name": "Bangshal"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 28,
+        "fields": {
+            "city": 1,
+            "name": "Keraniganj upazila"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 29,
+        "fields": {
+            "city": 1,
+            "name": "Wari"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 30,
+        "fields": {
+            "city": 1,
+            "name": "Paltan model"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 31,
+        "fields": {
+            "city": 1,
+            "name": "Kadomtoli"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 32,
+        "fields": {
+            "city": 1,
+            "name": "Shyampur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 33,
+        "fields": {
+            "city": 1,
+            "name": "Gendaria"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 34,
+        "fields": {
+            "city": 1,
+            "name": "Shah ali"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 35,
+        "fields": {
+            "city": 1,
+            "name": "Rupnagar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 36,
+        "fields": {
+            "city": 1,
+            "name": "Pallabi"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 37,
+        "fields": {
+            "city": 1,
+            "name": "Cantonment"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 38,
+        "fields": {
+            "city": 1,
+            "name": "Mirpur model"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 39,
+        "fields": {
+            "city": 1,
+            "name": "Kafrul"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 40,
+        "fields": {
+            "city": 1,
+            "name": "Darus-salam"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 41,
+        "fields": {
+            "city": 1,
+            "name": "Uttara east"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 42,
+        "fields": {
+            "city": 1,
+            "name": "Khilkhet"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 43,
+        "fields": {
+            "city": 1,
+            "name": "Uttar khan"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 44,
+        "fields": {
+            "city": 1,
+            "name": "Bhashantek"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 45,
+        "fields": {
+            "city": 1,
+            "name": "New market"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 46,
+        "fields": {
+            "city": 1,
+            "name": "Uttara west"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 47,
+        "fields": {
+            "city": 1,
+            "name": "Dakshin khan"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 48,
+        "fields": {
+            "city": 1,
+            "name": "Mughdapara"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 49,
+        "fields": {
+            "city": 1,
+            "name": "Kotwali"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 50,
+        "fields": {
+            "city": 1,
+            "name": "Sutrapur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 51,
+        "fields": {
+            "city": 1,
+            "name": "Hatirjheel"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 52,
+        "fields": {
+            "city": 1,
+            "name": "Maghbazar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 53,
+        "fields": {
+            "city": 1,
+            "name": "Keraniganj upazila sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 54,
+        "fields": {
+            "city": 1,
+            "name": "Ati bazar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 55,
+        "fields": {
+            "city": 1,
+            "name": "Badda"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 56,
+        "fields": {
+            "city": 1,
+            "name": "Savar sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 57,
+        "fields": {
+            "city": 1,
+            "name": "Sadarghat"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 58,
+        "fields": {
+            "city": 1,
+            "name": "Savar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 59,
+        "fields": {
+            "city": 1,
+            "name": "Nawabganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 60,
+        "fields": {
+            "city": 1,
+            "name": "Kolabagan"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 61,
+        "fields": {
+            "city": 1,
+            "name": "Shanatinagar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 62,
+        "fields": {
+            "city": 1,
+            "name": "Uttara"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 63,
+        "fields": {
+            "city": 1,
+            "name": "Sher-e bangla"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 64,
+        "fields": {
+            "city": 1,
+            "name": "Malibagh"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 65,
+        "fields": {
+            "city": 1,
+            "name": "Tejgaon industrial"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 66,
+        "fields": {
+            "city": 1,
+            "name": "Mugdapara"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 67,
+        "fields": {
+            "city": 1,
+            "name": "Dhamrai"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 68,
+        "fields": {
+            "city": 1,
+            "name": "Dohar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 69,
+        "fields": {
+            "city": 1,
+            "name": "Kanchan bridge"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 70,
+        "fields": {
+            "city": 1,
+            "name": "Matuwail"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 71,
+        "fields": {
+            "city": 1,
+            "name": "Turag"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 72,
+        "fields": {
+            "city": 2,
+            "name": "Chittagong kotwali thana"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 73,
+        "fields": {
+            "city": 2,
+            "name": "Anwara upazila sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 74,
+        "fields": {
+            "city": 2,
+            "name": "Banshkhali upazila sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 75,
+        "fields": {
+            "city": 2,
+            "name": "Boalkhali upazila sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 76,
+        "fields": {
+            "city": 2,
+            "name": "Chandanaish upazila sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 77,
+        "fields": {
+            "city": 2,
+            "name": "Fatikchhari upazila sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 78,
+        "fields": {
+            "city": 2,
+            "name": "Hathazari upazila sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 79,
+        "fields": {
+            "city": 2,
+            "name": "Lohagara upazila sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 80,
+        "fields": {
+            "city": 2,
+            "name": "Mirsharai"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 81,
+        "fields": {
+            "city": 2,
+            "name": "Patiya upazila sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 82,
+        "fields": {
+            "city": 2,
+            "name": "Rangunia upazila sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 83,
+        "fields": {
+            "city": 2,
+            "name": "Raozan upazila sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 84,
+        "fields": {
+            "city": 2,
+            "name": "Satkania upazila sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 85,
+        "fields": {
+            "city": 2,
+            "name": "Sitakund"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 86,
+        "fields": {
+            "city": 2,
+            "name": "Cornel hat (chittagong)"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 87,
+        "fields": {
+            "city": 2,
+            "name": "Potenga chittagong"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 88,
+        "fields": {
+            "city": 2,
+            "name": "Chittagong university of engineering & technology (cuet)"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 89,
+        "fields": {
+            "city": 2,
+            "name": "Chattogram sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 90,
+        "fields": {
+            "city": 2,
+            "name": "Kotwali"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 91,
+        "fields": {
+            "city": 2,
+            "name": "Hathazari"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 92,
+        "fields": {
+            "city": 2,
+            "name": "Bayejid bostami"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 93,
+        "fields": {
+            "city": 2,
+            "name": "Chowdhury hat"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 94,
+        "fields": {
+            "city": 2,
+            "name": "Raozan"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 95,
+        "fields": {
+            "city": 2,
+            "name": "Satkania"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 96,
+        "fields": {
+            "city": 2,
+            "name": "Anowara"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 97,
+        "fields": {
+            "city": 2,
+            "name": "Banshkhali"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 98,
+        "fields": {
+            "city": 2,
+            "name": "Karnaphuli"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 99,
+        "fields": {
+            "city": 2,
+            "name": "Boalkhali"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 100,
+        "fields": {
+            "city": 2,
+            "name": "Chandanaish"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 101,
+        "fields": {
+            "city": 2,
+            "name": "Patiya"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 102,
+        "fields": {
+            "city": 2,
+            "name": "Chittagong"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 103,
+        "fields": {
+            "city": 2,
+            "name": "Patenga"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 104,
+        "fields": {
+            "city": 2,
+            "name": "Bhujpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 105,
+        "fields": {
+            "city": 2,
+            "name": "Rangunia"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 106,
+        "fields": {
+            "city": 2,
+            "name": "Sitakunda"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 107,
+        "fields": {
+            "city": 2,
+            "name": "Fatikchhari"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 108,
+        "fields": {
+            "city": 2,
+            "name": "Sandwip"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 109,
+        "fields": {
+            "city": 2,
+            "name": "Anawara"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 110,
+        "fields": {
+            "city": 2,
+            "name": "Halishohor"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 111,
+        "fields": {
+            "city": 2,
+            "name": "Panchlaish"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 112,
+        "fields": {
+            "city": 3,
+            "name": "Comilla city"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 113,
+        "fields": {
+            "city": 3,
+            "name": "Homna"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 114,
+        "fields": {
+            "city": 3,
+            "name": "Meghna"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 115,
+        "fields": {
+            "city": 3,
+            "name": "Titas"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 116,
+        "fields": {
+            "city": 3,
+            "name": "Daudkandi"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 117,
+        "fields": {
+            "city": 3,
+            "name": "Gauripur sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 118,
+        "fields": {
+            "city": 3,
+            "name": "Chandina"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 119,
+        "fields": {
+            "city": 3,
+            "name": "Comilla adarsha sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 120,
+        "fields": {
+            "city": 3,
+            "name": "Comilla sadar dakshin"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 121,
+        "fields": {
+            "city": 3,
+            "name": "Chauddagram"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 122,
+        "fields": {
+            "city": 3,
+            "name": "Laksam"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 123,
+        "fields": {
+            "city": 3,
+            "name": "Nangalkot"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 124,
+        "fields": {
+            "city": 3,
+            "name": "Debidwar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 125,
+        "fields": {
+            "city": 3,
+            "name": "Muradnagar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 126,
+        "fields": {
+            "city": 3,
+            "name": "Manoharganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 127,
+        "fields": {
+            "city": 3,
+            "name": "Brahman para"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 128,
+        "fields": {
+            "city": 3,
+            "name": "Burichang"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 129,
+        "fields": {
+            "city": 3,
+            "name": "Barura"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 130,
+        "fields": {
+            "city": 3,
+            "name": "Chouddagram"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 131,
+        "fields": {
+            "city": 3,
+            "name": "Burichong"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 132,
+        "fields": {
+            "city": 3,
+            "name": "Davidhar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 133,
+        "fields": {
+            "city": 3,
+            "name": "Comilla sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 134,
+        "fields": {
+            "city": 3,
+            "name": "Langalkot"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 135,
+        "fields": {
+            "city": 4,
+            "name": "Noakhali sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 136,
+        "fields": {
+            "city": 4,
+            "name": "Basurhat"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 137,
+        "fields": {
+            "city": 4,
+            "name": "Maijdee"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 138,
+        "fields": {
+            "city": 4,
+            "name": "Begumganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 139,
+        "fields": {
+            "city": 4,
+            "name": "Senbag"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 140,
+        "fields": {
+            "city": 4,
+            "name": "Companiganj upazila"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 141,
+        "fields": {
+            "city": 4,
+            "name": "Chatkhil"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 142,
+        "fields": {
+            "city": 4,
+            "name": "Kabirhat upazila"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 143,
+        "fields": {
+            "city": 4,
+            "name": "Bozra bazar(sonaimuri upazila)"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 144,
+        "fields": {
+            "city": 4,
+            "name": "Amisha para bazar(sonaimuri upazila)"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 145,
+        "fields": {
+            "city": 4,
+            "name": "Subarna char"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 146,
+        "fields": {
+            "city": 4,
+            "name": "Hatiya"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 147,
+        "fields": {
+            "city": 5,
+            "name": "Feni sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 148,
+        "fields": {
+            "city": 5,
+            "name": "Daganbhuiyan"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 149,
+        "fields": {
+            "city": 5,
+            "name": "Chhagalnaiya"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 150,
+        "fields": {
+            "city": 5,
+            "name": "Porshuram"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 151,
+        "fields": {
+            "city": 5,
+            "name": "Fulgazi"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 152,
+        "fields": {
+            "city": 5,
+            "name": "Sonagazi"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 153,
+        "fields": {
+            "city": 5,
+            "name": "Sitakunda"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 154,
+        "fields": {
+            "city": 5,
+            "name": "Mirsharai"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 155,
+        "fields": {
+            "city": 5,
+            "name": "Pashurampur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 156,
+        "fields": {
+            "city": 5,
+            "name": "Basurhat"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 157,
+        "fields": {
+            "city": 5,
+            "name": "Chhagalnaia"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 158,
+        "fields": {
+            "city": 5,
+            "name": "Dagonbhuia"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 159,
+        "fields": {
+            "city": 5,
+            "name": "Noakhali sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 160,
+        "fields": {
+            "city": 6,
+            "name": "Lakhshmipur sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 161,
+        "fields": {
+            "city": 6,
+            "name": "Ramgonj upazila"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 162,
+        "fields": {
+            "city": 6,
+            "name": "Raipur upazila"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 163,
+        "fields": {
+            "city": 6,
+            "name": "Ramgati upazila"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 164,
+        "fields": {
+            "city": 6,
+            "name": "Kamalnagar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 165,
+        "fields": {
+            "city": 6,
+            "name": "Chandragonj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 166,
+        "fields": {
+            "city": 7,
+            "name": "Brahmanbaria sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 167,
+        "fields": {
+            "city": 7,
+            "name": "Ashuganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 168,
+        "fields": {
+            "city": 7,
+            "name": "Sarial"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 169,
+        "fields": {
+            "city": 7,
+            "name": "Kasba"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 170,
+        "fields": {
+            "city": 7,
+            "name": "Nasirnagar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 171,
+        "fields": {
+            "city": 7,
+            "name": "Sarail"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 172,
+        "fields": {
+            "city": 7,
+            "name": "Banchharampur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 173,
+        "fields": {
+            "city": 8,
+            "name": "Chandpur sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 174,
+        "fields": {
+            "city": 8,
+            "name": "Shahrasti"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 175,
+        "fields": {
+            "city": 8,
+            "name": "Faridganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 176,
+        "fields": {
+            "city": 8,
+            "name": "Haimchar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 177,
+        "fields": {
+            "city": 8,
+            "name": "Haziganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 178,
+        "fields": {
+            "city": 8,
+            "name": "Matlab (uttar)"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 179,
+        "fields": {
+            "city": 8,
+            "name": "Matlab (dakshin)"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 180,
+        "fields": {
+            "city": 8,
+            "name": "Kachua"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 181,
+        "fields": {
+            "city": 9,
+            "name": "Rajshahi sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 182,
+        "fields": {
+            "city": 9,
+            "name": "Godagari"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 183,
+        "fields": {
+            "city": 9,
+            "name": "Tanor"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 184,
+        "fields": {
+            "city": 9,
+            "name": "Matihar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 185,
+        "fields": {
+            "city": 9,
+            "name": "Boalia"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 186,
+        "fields": {
+            "city": 9,
+            "name": "Bagha"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 187,
+        "fields": {
+            "city": 9,
+            "name": "Paba"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 188,
+        "fields": {
+            "city": 9,
+            "name": "Puthia"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 189,
+        "fields": {
+            "city": 9,
+            "name": "Rajpara"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 190,
+        "fields": {
+            "city": 9,
+            "name": "Mohanpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 191,
+        "fields": {
+            "city": 9,
+            "name": "Charghat"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 192,
+        "fields": {
+            "city": 9,
+            "name": "Durgapur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 193,
+        "fields": {
+            "city": 9,
+            "name": "Shah makhdum"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 194,
+        "fields": {
+            "city": 9,
+            "name": "Tanore"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 195,
+        "fields": {
+            "city": 9,
+            "name": "Baghmara"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 196,
+        "fields": {
+            "city": 9,
+            "name": "Khod mohanpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 197,
+        "fields": {
+            "city": 9,
+            "name": "Bagmara"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 198,
+        "fields": {
+            "city": 9,
+            "name": "Kashiadanga"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 199,
+        "fields": {
+            "city": 9,
+            "name": "Katakhali"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 200,
+        "fields": {
+            "city": 10,
+            "name": "Bogura sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 201,
+        "fields": {
+            "city": 10,
+            "name": "Kahaloo"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 202,
+        "fields": {
+            "city": 10,
+            "name": "Gabtalo"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 203,
+        "fields": {
+            "city": 10,
+            "name": "Sonatola"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 204,
+        "fields": {
+            "city": 10,
+            "name": "Dhunat"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 205,
+        "fields": {
+            "city": 10,
+            "name": "Shahjahanpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 206,
+        "fields": {
+            "city": 10,
+            "name": "Sherpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 207,
+        "fields": {
+            "city": 10,
+            "name": "Dhupchanchia"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 208,
+        "fields": {
+            "city": 10,
+            "name": "Sariakandi"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 209,
+        "fields": {
+            "city": 10,
+            "name": "Adamdighi"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 210,
+        "fields": {
+            "city": 10,
+            "name": "Nandigram"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 211,
+        "fields": {
+            "city": 10,
+            "name": "Adomdighi"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 212,
+        "fields": {
+            "city": 10,
+            "name": "Dhunut"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 213,
+        "fields": {
+            "city": 10,
+            "name": "Gabtoli"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 214,
+        "fields": {
+            "city": 10,
+            "name": "Shibgonj bogra"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 215,
+        "fields": {
+            "city": 10,
+            "name": "Kahalu"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 216,
+        "fields": {
+            "city": 11,
+            "name": "Rangpur sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 217,
+        "fields": {
+            "city": 11,
+            "name": "Mitha pukur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 218,
+        "fields": {
+            "city": 11,
+            "name": "Pirganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 219,
+        "fields": {
+            "city": 11,
+            "name": "Taraganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 220,
+        "fields": {
+            "city": 11,
+            "name": "Fulbari"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 221,
+        "fields": {
+            "city": 11,
+            "name": "Badarganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 222,
+        "fields": {
+            "city": 11,
+            "name": "Gangachara"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 223,
+        "fields": {
+            "city": 11,
+            "name": "Pirgachha"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 224,
+        "fields": {
+            "city": 11,
+            "name": "Kaunia"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 225,
+        "fields": {
+            "city": 12,
+            "name": "Nilphamari sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 226,
+        "fields": {
+            "city": 12,
+            "name": "Syedpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 227,
+        "fields": {
+            "city": 12,
+            "name": "Dimla"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 228,
+        "fields": {
+            "city": 12,
+            "name": "Domar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 229,
+        "fields": {
+            "city": 12,
+            "name": "Jaldhaka"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 230,
+        "fields": {
+            "city": 12,
+            "name": "Kishoreganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 231,
+        "fields": {
+            "city": 12,
+            "name": "Nilphamari sugar mill"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 232,
+        "fields": {
+            "city": 12,
+            "name": "Ghaga"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 233,
+        "fields": {
+            "city": 12,
+            "name": "Chilahati"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 234,
+        "fields": {
+            "city": 12,
+            "name": "Syedpur uposhohor"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 235,
+        "fields": {
+            "city": 13,
+            "name": "Khulna sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 236,
+        "fields": {
+            "city": 13,
+            "name": "Paikgachha upazila sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 237,
+        "fields": {
+            "city": 13,
+            "name": "Phultala upazila sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 238,
+        "fields": {
+            "city": 13,
+            "name": "Dighalia upazila sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 239,
+        "fields": {
+            "city": 13,
+            "name": "Rupsa upazila sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 240,
+        "fields": {
+            "city": 13,
+            "name": "Terokhada upazila sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 241,
+        "fields": {
+            "city": 13,
+            "name": "Dumuria upazila sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 242,
+        "fields": {
+            "city": 13,
+            "name": "Batiaghata upazila sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 243,
+        "fields": {
+            "city": 13,
+            "name": "Dacope upazila sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 244,
+        "fields": {
+            "city": 13,
+            "name": "Koyra upazila sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 245,
+        "fields": {
+            "city": 13,
+            "name": "Khalishpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 246,
+        "fields": {
+            "city": 13,
+            "name": "Rupsa"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 247,
+        "fields": {
+            "city": 13,
+            "name": "Khan jahan ali"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 248,
+        "fields": {
+            "city": 13,
+            "name": "Sonadanga"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 249,
+        "fields": {
+            "city": 13,
+            "name": "Terokhada"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 250,
+        "fields": {
+            "city": 13,
+            "name": "Paikgachha"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 251,
+        "fields": {
+            "city": 13,
+            "name": "Batiaghata"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 252,
+        "fields": {
+            "city": 13,
+            "name": "Dighalia"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 253,
+        "fields": {
+            "city": 13,
+            "name": "Dumuria"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 254,
+        "fields": {
+            "city": 13,
+            "name": "Phultala"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 255,
+        "fields": {
+            "city": 13,
+            "name": "Koyra"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 256,
+        "fields": {
+            "city": 13,
+            "name": "Dacope"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 257,
+        "fields": {
+            "city": 13,
+            "name": "Chalna bazar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 258,
+        "fields": {
+            "city": 13,
+            "name": "Digalia"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 259,
+        "fields": {
+            "city": 13,
+            "name": "Sajiara"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 260,
+        "fields": {
+            "city": 13,
+            "name": "Alaipur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 261,
+        "fields": {
+            "city": 13,
+            "name": "Batiaghat"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 262,
+        "fields": {
+            "city": 13,
+            "name": "Madinabad"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 263,
+        "fields": {
+            "city": 13,
+            "name": "Terakhada"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 264,
+        "fields": {
+            "city": 13,
+            "name": "Paikgacha"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 265,
+        "fields": {
+            "city": 14,
+            "name": "Jessore sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 266,
+        "fields": {
+            "city": 14,
+            "name": "Manirampur upazila sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 267,
+        "fields": {
+            "city": 14,
+            "name": "Abhaynagar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 268,
+        "fields": {
+            "city": 14,
+            "name": "Keshabpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 269,
+        "fields": {
+            "city": 14,
+            "name": "Bagherpara"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 270,
+        "fields": {
+            "city": 14,
+            "name": "Chougachha"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 271,
+        "fields": {
+            "city": 14,
+            "name": "Jhikargacha"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 272,
+        "fields": {
+            "city": 14,
+            "name": "Sharsha"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 273,
+        "fields": {
+            "city": 14,
+            "name": "Narail sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 274,
+        "fields": {
+            "city": 15,
+            "name": "Kushtia sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 275,
+        "fields": {
+            "city": 15,
+            "name": "Meherpur sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 276,
+        "fields": {
+            "city": 15,
+            "name": "Mirpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 277,
+        "fields": {
+            "city": 15,
+            "name": "Kumarkhali"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 278,
+        "fields": {
+            "city": 15,
+            "name": "Khoksa"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 279,
+        "fields": {
+            "city": 15,
+            "name": "Bheramara"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 280,
+        "fields": {
+            "city": 15,
+            "name": "Rafayetpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 281,
+        "fields": {
+            "city": 15,
+            "name": "Janipur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 282,
+        "fields": {
+            "city": 15,
+            "name": "Gangni"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 283,
+        "fields": {
+            "city": 16,
+            "name": "Sadar thana"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 284,
+        "fields": {
+            "city": 16,
+            "name": "Kaliganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 285,
+        "fields": {
+            "city": 16,
+            "name": "Kalaroa"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 286,
+        "fields": {
+            "city": 16,
+            "name": "Debhata"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 287,
+        "fields": {
+            "city": 16,
+            "name": "Shyamnagar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 288,
+        "fields": {
+            "city": 16,
+            "name": "Tala"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 289,
+        "fields": {
+            "city": 16,
+            "name": "Assasuni"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 290,
+        "fields": {
+            "city": 16,
+            "name": "Nakipur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 291,
+        "fields": {
+            "city": 17,
+            "name": "Sylhet sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 292,
+        "fields": {
+            "city": 17,
+            "name": "Balagonj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 293,
+        "fields": {
+            "city": 17,
+            "name": "Goainghat"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 294,
+        "fields": {
+            "city": 17,
+            "name": "Kanaighat"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 295,
+        "fields": {
+            "city": 17,
+            "name": "Zakigonj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 296,
+        "fields": {
+            "city": 17,
+            "name": "Osmani nagar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 297,
+        "fields": {
+            "city": 17,
+            "name": "Bishwanath"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 298,
+        "fields": {
+            "city": 17,
+            "name": "Golabganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 299,
+        "fields": {
+            "city": 17,
+            "name": "South surma"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 300,
+        "fields": {
+            "city": 17,
+            "name": "Jointapur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 301,
+        "fields": {
+            "city": 17,
+            "name": "Companiganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 302,
+        "fields": {
+            "city": 17,
+            "name": "Zakiganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 303,
+        "fields": {
+            "city": 17,
+            "name": "Beani bazar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 304,
+        "fields": {
+            "city": 17,
+            "name": "Kaniaghat"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 305,
+        "fields": {
+            "city": 17,
+            "name": "Jagnnathpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 306,
+        "fields": {
+            "city": 17,
+            "name": "Sunamganj sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 307,
+        "fields": {
+            "city": 17,
+            "name": "Dhirai chandpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 308,
+        "fields": {
+            "city": 17,
+            "name": "Chhatak"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 309,
+        "fields": {
+            "city": 17,
+            "name": "Duara bazar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 310,
+        "fields": {
+            "city": 17,
+            "name": "Ghungiar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 311,
+        "fields": {
+            "city": 17,
+            "name": "Balaganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 312,
+        "fields": {
+            "city": 17,
+            "name": "Tm"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 313,
+        "fields": {
+            "city": 18,
+            "name": "Moulvibazar sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 314,
+        "fields": {
+            "city": 18,
+            "name": "Sreemangal"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 315,
+        "fields": {
+            "city": 18,
+            "name": "Kulaura"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 316,
+        "fields": {
+            "city": 18,
+            "name": "Barlekha"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 317,
+        "fields": {
+            "city": 18,
+            "name": "Rajnagar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 318,
+        "fields": {
+            "city": 18,
+            "name": "Baralekha"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 319,
+        "fields": {
+            "city": 18,
+            "name": "Kamalganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 320,
+        "fields": {
+            "city": 19,
+            "name": "Habiganj sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 321,
+        "fields": {
+            "city": 19,
+            "name": "Azmireeganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 322,
+        "fields": {
+            "city": 19,
+            "name": "Bahubal"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 323,
+        "fields": {
+            "city": 19,
+            "name": "Baniachang"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 324,
+        "fields": {
+            "city": 19,
+            "name": "Chunarughat"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 325,
+        "fields": {
+            "city": 19,
+            "name": "Shaestaganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 326,
+        "fields": {
+            "city": 19,
+            "name": "Madhabpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 327,
+        "fields": {
+            "city": 19,
+            "name": "Nabiganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 328,
+        "fields": {
+            "city": 19,
+            "name": "Lakhai"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 329,
+        "fields": {
+            "city": 20,
+            "name": "Barisal sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 330,
+        "fields": {
+            "city": 20,
+            "name": "Banaripara"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 331,
+        "fields": {
+            "city": 20,
+            "name": "Agailjhara"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 332,
+        "fields": {
+            "city": 20,
+            "name": "Gouranadi"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 333,
+        "fields": {
+            "city": 20,
+            "name": "Mehendiganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 334,
+        "fields": {
+            "city": 20,
+            "name": "Muladi"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 335,
+        "fields": {
+            "city": 20,
+            "name": "Babuganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 336,
+        "fields": {
+            "city": 20,
+            "name": "Bakerganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 337,
+        "fields": {
+            "city": 20,
+            "name": "Uzirpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 338,
+        "fields": {
+            "city": 20,
+            "name": "Barishal sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 339,
+        "fields": {
+            "city": 20,
+            "name": "Sahebganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 340,
+        "fields": {
+            "city": 20,
+            "name": "Barajalia"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 341,
+        "fields": {
+            "city": 20,
+            "name": "Mahendiganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 342,
+        "fields": {
+            "city": 20,
+            "name": "Agailzhara"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 343,
+        "fields": {
+            "city": 20,
+            "name": "Nalchhiti"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 344,
+        "fields": {
+            "city": 20,
+            "name": "Kathalia"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 345,
+        "fields": {
+            "city": 20,
+            "name": "Jhalokathi sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 346,
+        "fields": {
+            "city": 20,
+            "name": "Shailakupa"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 347,
+        "fields": {
+            "city": 20,
+            "name": "Hizla"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 348,
+        "fields": {
+            "city": 21,
+            "name": "Mymensingh sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 349,
+        "fields": {
+            "city": 21,
+            "name": "Muktagacha"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 350,
+        "fields": {
+            "city": 21,
+            "name": "Fulbaria"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 351,
+        "fields": {
+            "city": 21,
+            "name": "Trishal"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 352,
+        "fields": {
+            "city": 21,
+            "name": "Bhaluka"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 353,
+        "fields": {
+            "city": 21,
+            "name": "Phulpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 354,
+        "fields": {
+            "city": 21,
+            "name": "Tarakanda"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 355,
+        "fields": {
+            "city": 21,
+            "name": "Haluaghat"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 356,
+        "fields": {
+            "city": 21,
+            "name": "Gouripur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 357,
+        "fields": {
+            "city": 21,
+            "name": "Ishwarganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 358,
+        "fields": {
+            "city": 21,
+            "name": "Nandail"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 359,
+        "fields": {
+            "city": 21,
+            "name": "Gafargaon"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 360,
+        "fields": {
+            "city": 21,
+            "name": "Dhobaura"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 361,
+        "fields": {
+            "city": 21,
+            "name": "Gaforgaon"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 362,
+        "fields": {
+            "city": 21,
+            "name": "Tarakhanda"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 363,
+        "fields": {
+            "city": 21,
+            "name": "Muktagachha"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 364,
+        "fields": {
+            "city": 21,
+            "name": "Isshwarganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 365,
+        "fields": {
+            "city": 21,
+            "name": "Isshwargonj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 366,
+        "fields": {
+            "city": 21,
+            "name": "Gabtoli"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 367,
+        "fields": {
+            "city": 22,
+            "name": "Narayanganj sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 368,
+        "fields": {
+            "city": 22,
+            "name": "Araihazar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 369,
+        "fields": {
+            "city": 22,
+            "name": "Rupganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 370,
+        "fields": {
+            "city": 22,
+            "name": "Gopaldi"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 371,
+        "fields": {
+            "city": 22,
+            "name": "Bandar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 372,
+        "fields": {
+            "city": 22,
+            "name": "Sonargaon"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 373,
+        "fields": {
+            "city": 22,
+            "name": "Fatullah"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 374,
+        "fields": {
+            "city": 22,
+            "name": "Siddhirgonj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 375,
+        "fields": {
+            "city": 22,
+            "name": "Baidderbazar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 376,
+        "fields": {
+            "city": 22,
+            "name": "Siddirganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 377,
+        "fields": {
+            "city": 22,
+            "name": "Modongonj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 378,
+        "fields": {
+            "city": 22,
+            "name": "Baidder bazar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 379,
+        "fields": {
+            "city": 23,
+            "name": "Sadar thana"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 380,
+        "fields": {
+            "city": 23,
+            "name": "Bhairab"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 381,
+        "fields": {
+            "city": 23,
+            "name": "Kishorganj (sub)"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 382,
+        "fields": {
+            "city": 23,
+            "name": "Mithamain"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 383,
+        "fields": {
+            "city": 23,
+            "name": "Tarail"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 384,
+        "fields": {
+            "city": 23,
+            "name": "Pakundia"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 385,
+        "fields": {
+            "city": 23,
+            "name": "Kuliar char"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 386,
+        "fields": {
+            "city": 23,
+            "name": "Katiadi"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 387,
+        "fields": {
+            "city": 23,
+            "name": "Nikli"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 388,
+        "fields": {
+            "city": 23,
+            "name": "Karimganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 389,
+        "fields": {
+            "city": 23,
+            "name": "Austagram"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 390,
+        "fields": {
+            "city": 23,
+            "name": "Bajitpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 391,
+        "fields": {
+            "city": 23,
+            "name": "Hossainpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 392,
+        "fields": {
+            "city": 23,
+            "name": "Itna"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 393,
+        "fields": {
+            "city": 24,
+            "name": "Tangail sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 394,
+        "fields": {
+            "city": 24,
+            "name": "Ghatail"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 395,
+        "fields": {
+            "city": 24,
+            "name": "Mirzapur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 396,
+        "fields": {
+            "city": 24,
+            "name": "Kalihati"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 397,
+        "fields": {
+            "city": 24,
+            "name": "Nagarpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 398,
+        "fields": {
+            "city": 24,
+            "name": "Bhuapur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 399,
+        "fields": {
+            "city": 24,
+            "name": "Basail"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 400,
+        "fields": {
+            "city": 24,
+            "name": "Dhanbari"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 401,
+        "fields": {
+            "city": 24,
+            "name": "Delduar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 402,
+        "fields": {
+            "city": 24,
+            "name": "Madhupur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 403,
+        "fields": {
+            "city": 24,
+            "name": "Sakhipur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 404,
+        "fields": {
+            "city": 24,
+            "name": "Gopalpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 405,
+        "fields": {
+            "city": 24,
+            "name": "Ashulia"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 406,
+        "fields": {
+            "city": 24,
+            "name": "Kashkaolia"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 407,
+        "fields": {
+            "city": 25,
+            "name": "Joydebpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 408,
+        "fields": {
+            "city": 25,
+            "name": "Tongi"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 409,
+        "fields": {
+            "city": 25,
+            "name": "Rajendrapur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 410,
+        "fields": {
+            "city": 25,
+            "name": "Shakhipur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 411,
+        "fields": {
+            "city": 25,
+            "name": "Kapasia"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 412,
+        "fields": {
+            "city": 25,
+            "name": "Sreepur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 413,
+        "fields": {
+            "city": 25,
+            "name": "Kaliakair"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 414,
+        "fields": {
+            "city": 25,
+            "name": "Kaliganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 415,
+        "fields": {
+            "city": 25,
+            "name": "Gazipur sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 416,
+        "fields": {
+            "city": 25,
+            "name": "Pubail"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 417,
+        "fields": {
+            "city": 25,
+            "name": "Gazipur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 418,
+        "fields": {
+            "city": 25,
+            "name": "Kaliakaar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 419,
+        "fields": {
+            "city": 26,
+            "name": "Coxs bazar sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 420,
+        "fields": {
+            "city": 26,
+            "name": "Chakaria"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 421,
+        "fields": {
+            "city": 26,
+            "name": "Ukhiya"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 422,
+        "fields": {
+            "city": 26,
+            "name": "Ramu"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 423,
+        "fields": {
+            "city": 26,
+            "name": "Kutubdia"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 424,
+        "fields": {
+            "city": 26,
+            "name": "Moheskhali"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 425,
+        "fields": {
+            "city": 26,
+            "name": "Pekua"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 426,
+        "fields": {
+            "city": 26,
+            "name": "Teknaf"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 427,
+        "fields": {
+            "city": 26,
+            "name": "Chiringga"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 428,
+        "fields": {
+            "city": 26,
+            "name": "Cox's bazar-sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 429,
+        "fields": {
+            "city": 27,
+            "name": "Sherpur sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 430,
+        "fields": {
+            "city": 27,
+            "name": "Nakla"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 431,
+        "fields": {
+            "city": 27,
+            "name": "Jhinaigati"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 432,
+        "fields": {
+            "city": 27,
+            "name": "Shribardi"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 433,
+        "fields": {
+            "city": 27,
+            "name": "Nailtabari"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 434,
+        "fields": {
+            "city": 28,
+            "name": "Narsingdi sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 435,
+        "fields": {
+            "city": 28,
+            "name": "Palash"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 436,
+        "fields": {
+            "city": 28,
+            "name": "Madhbdi"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 437,
+        "fields": {
+            "city": 28,
+            "name": "Shibpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 438,
+        "fields": {
+            "city": 28,
+            "name": "Belabo"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 439,
+        "fields": {
+            "city": 28,
+            "name": "Roypura"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 440,
+        "fields": {
+            "city": 28,
+            "name": "Manohardi"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 441,
+        "fields": {
+            "city": 29,
+            "name": "Chuadanga sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 442,
+        "fields": {
+            "city": 29,
+            "name": "Alamdanga"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 443,
+        "fields": {
+            "city": 29,
+            "name": "Damurhuda"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 444,
+        "fields": {
+            "city": 29,
+            "name": "Daulatganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 445,
+        "fields": {
+            "city": 30,
+            "name": "South sunamganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 446,
+        "fields": {
+            "city": 30,
+            "name": "Hasan fatemapur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 447,
+        "fields": {
+            "city": 30,
+            "name": "Biswamvarpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 448,
+        "fields": {
+            "city": 30,
+            "name": "Tahirpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 449,
+        "fields": {
+            "city": 30,
+            "name": "Sunamganj sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 450,
+        "fields": {
+            "city": 30,
+            "name": "Sulla"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 451,
+        "fields": {
+            "city": 30,
+            "name": "Jagnnathpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 452,
+        "fields": {
+            "city": 30,
+            "name": "Jagannathpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 453,
+        "fields": {
+            "city": 30,
+            "name": "Chhatak"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 454,
+        "fields": {
+            "city": 30,
+            "name": "Dhirai chandpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 455,
+        "fields": {
+            "city": 30,
+            "name": "Dakshin sunamganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 456,
+        "fields": {
+            "city": 30,
+            "name": "Dowarabazar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 457,
+        "fields": {
+            "city": 30,
+            "name": "Bishwambarpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 458,
+        "fields": {
+            "city": 30,
+            "name": "Dhirai"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 459,
+        "fields": {
+            "city": 30,
+            "name": "Dharampasha"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 460,
+        "fields": {
+            "city": 30,
+            "name": "Jamalganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 461,
+        "fields": {
+            "city": 30,
+            "name": "Salla"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 462,
+        "fields": {
+            "city": 30,
+            "name": "Fenchuganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 463,
+        "fields": {
+            "city": 30,
+            "name": "Taherpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 464,
+        "fields": {
+            "city": 30,
+            "name": "Bishambarpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 465,
+        "fields": {
+            "city": 30,
+            "name": "Jamalpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 466,
+        "fields": {
+            "city": 31,
+            "name": "Madaripur sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 467,
+        "fields": {
+            "city": 31,
+            "name": "Bajitpur union digital centre"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 468,
+        "fields": {
+            "city": 31,
+            "name": "Kalkini"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 469,
+        "fields": {
+            "city": 31,
+            "name": "Rajoir"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 470,
+        "fields": {
+            "city": 31,
+            "name": "Shibchar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 471,
+        "fields": {
+            "city": 31,
+            "name": "Brahmanganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 472,
+        "fields": {
+            "city": 32,
+            "name": "Lalmonirhat sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 473,
+        "fields": {
+            "city": 32,
+            "name": "Aditmari upazila"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 474,
+        "fields": {
+            "city": 32,
+            "name": "Hatibandha upazila"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 475,
+        "fields": {
+            "city": 32,
+            "name": "Kaliganj upazila"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 476,
+        "fields": {
+            "city": 32,
+            "name": "Patgram upazila"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 477,
+        "fields": {
+            "city": 33,
+            "name": "Panchagarh sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 478,
+        "fields": {
+            "city": 33,
+            "name": "Boda"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 479,
+        "fields": {
+            "city": 33,
+            "name": "Debiganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 480,
+        "fields": {
+            "city": 33,
+            "name": "Tentulia"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 481,
+        "fields": {
+            "city": 34,
+            "name": "Munshiganj sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 482,
+        "fields": {
+            "city": 34,
+            "name": "Tongibari"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 483,
+        "fields": {
+            "city": 34,
+            "name": "Lohajang"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 484,
+        "fields": {
+            "city": 34,
+            "name": "Serajdikhan"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 485,
+        "fields": {
+            "city": 34,
+            "name": "Gazaria"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 486,
+        "fields": {
+            "city": 34,
+            "name": "Sreenagar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 487,
+        "fields": {
+            "city": 34,
+            "name": "Sirajdikhan"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 488,
+        "fields": {
+            "city": 35,
+            "name": "Khagrachari"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 489,
+        "fields": {
+            "city": 35,
+            "name": "Mahalchari"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 490,
+        "fields": {
+            "city": 35,
+            "name": "Dighinala"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 491,
+        "fields": {
+            "city": 35,
+            "name": "Panchari"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 492,
+        "fields": {
+            "city": 35,
+            "name": "Ramgarh"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 493,
+        "fields": {
+            "city": 35,
+            "name": "Matiranga"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 494,
+        "fields": {
+            "city": 35,
+            "name": "Guimara"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 495,
+        "fields": {
+            "city": 35,
+            "name": "Lakshmichhari"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 496,
+        "fields": {
+            "city": 35,
+            "name": "Manikchhari"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 497,
+        "fields": {
+            "city": 35,
+            "name": "Khagrachori sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 498,
+        "fields": {
+            "city": 35,
+            "name": "Mahalchhari"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 499,
+        "fields": {
+            "city": 35,
+            "name": "Panchhari"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 500,
+        "fields": {
+            "city": 36,
+            "name": "Faridpur sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 501,
+        "fields": {
+            "city": 36,
+            "name": "Bhanga"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 502,
+        "fields": {
+            "city": 36,
+            "name": "Alfadanga"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 503,
+        "fields": {
+            "city": 36,
+            "name": "Boalmari"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 504,
+        "fields": {
+            "city": 36,
+            "name": "Nagarkanda"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 505,
+        "fields": {
+            "city": 36,
+            "name": "Sadarpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 506,
+        "fields": {
+            "city": 36,
+            "name": "Saltha"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 507,
+        "fields": {
+            "city": 36,
+            "name": "Char bhadrasan"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 508,
+        "fields": {
+            "city": 36,
+            "name": "Madhukhali"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 509,
+        "fields": {
+            "city": 37,
+            "name": "Magura"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 510,
+        "fields": {
+            "city": 37,
+            "name": "Salikha"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 511,
+        "fields": {
+            "city": 37,
+            "name": "Mohammadpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 512,
+        "fields": {
+            "city": 37,
+            "name": "Sreepur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 513,
+        "fields": {
+            "city": 37,
+            "name": "Shalikha"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 514,
+        "fields": {
+            "city": 37,
+            "name": "Magura sador"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 515,
+        "fields": {
+            "city": 38,
+            "name": "Galachipa"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 516,
+        "fields": {
+            "city": 38,
+            "name": "Dashmina"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 517,
+        "fields": {
+            "city": 38,
+            "name": "Bauphal"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 518,
+        "fields": {
+            "city": 38,
+            "name": "Patuakhali sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 519,
+        "fields": {
+            "city": 38,
+            "name": "Subidkhali"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 520,
+        "fields": {
+            "city": 38,
+            "name": "Khepupara"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 521,
+        "fields": {
+            "city": 39,
+            "name": "Betagi"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 522,
+        "fields": {
+            "city": 39,
+            "name": "Amtali"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 523,
+        "fields": {
+            "city": 39,
+            "name": "Bamna"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 524,
+        "fields": {
+            "city": 39,
+            "name": "Barguna sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 525,
+        "fields": {
+            "city": 39,
+            "name": "Patharghata"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 526,
+        "fields": {
+            "city": 40,
+            "name": "Sharishabari"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 527,
+        "fields": {
+            "city": 40,
+            "name": "Dewanganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 528,
+        "fields": {
+            "city": 40,
+            "name": "Islampur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 529,
+        "fields": {
+            "city": 40,
+            "name": "Madarganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 530,
+        "fields": {
+            "city": 40,
+            "name": "Melandaha"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 531,
+        "fields": {
+            "city": 40,
+            "name": "Bakshiganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 532,
+        "fields": {
+            "city": 40,
+            "name": "Jamalpur sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 533,
+        "fields": {
+            "city": 40,
+            "name": "Malandah"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 534,
+        "fields": {
+            "city": 40,
+            "name": "Jamalpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 535,
+        "fields": {
+            "city": 40,
+            "name": "Mathargonj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 536,
+        "fields": {
+            "city": 40,
+            "name": "Shorishabari"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 537,
+        "fields": {
+            "city": 40,
+            "name": "Dewangonj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 538,
+        "fields": {
+            "city": 41,
+            "name": "Charfassion"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 539,
+        "fields": {
+            "city": 41,
+            "name": "Lalmohan"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 540,
+        "fields": {
+            "city": 41,
+            "name": "Monpura"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 541,
+        "fields": {
+            "city": 41,
+            "name": "Tazumuddin"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 542,
+        "fields": {
+            "city": 41,
+            "name": "Daulatkhan"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 543,
+        "fields": {
+            "city": 41,
+            "name": "Borhanuddin"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 544,
+        "fields": {
+            "city": 41,
+            "name": "Bhola sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 545,
+        "fields": {
+            "city": 41,
+            "name": "Hatshoshiganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 546,
+        "fields": {
+            "city": 41,
+            "name": "Borhanuddin upo"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 547,
+        "fields": {
+            "city": 41,
+            "name": "Doulatkhan"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 548,
+        "fields": {
+            "city": 41,
+            "name": "Charfashion"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 549,
+        "fields": {
+            "city": 41,
+            "name": "Lalmohan upo"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 550,
+        "fields": {
+            "city": 41,
+            "name": "Hajirhat"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 551,
+        "fields": {
+            "city": 42,
+            "name": "Bhedarganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 552,
+        "fields": {
+            "city": 42,
+            "name": "Damuddya"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 553,
+        "fields": {
+            "city": 42,
+            "name": "Goshairhat"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 554,
+        "fields": {
+            "city": 42,
+            "name": "Naria"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 555,
+        "fields": {
+            "city": 42,
+            "name": "Jajira"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 556,
+        "fields": {
+            "city": 42,
+            "name": "Shariatpur sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 557,
+        "fields": {
+            "city": 43,
+            "name": "Zianagar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 558,
+        "fields": {
+            "city": 43,
+            "name": "Pazirpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 559,
+        "fields": {
+            "city": 43,
+            "name": "Pesarabad"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 560,
+        "fields": {
+            "city": 43,
+            "name": "Bhandaria"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 561,
+        "fields": {
+            "city": 43,
+            "name": "Kawkhali"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 562,
+        "fields": {
+            "city": 43,
+            "name": "Mothbaria"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 563,
+        "fields": {
+            "city": 43,
+            "name": "Nesarabad (swarupkati)"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 564,
+        "fields": {
+            "city": 43,
+            "name": "Nazirur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 565,
+        "fields": {
+            "city": 43,
+            "name": "Pirojpur sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 566,
+        "fields": {
+            "city": 43,
+            "name": "Swarupkathi"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 567,
+        "fields": {
+            "city": 43,
+            "name": "Kaukhali"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 568,
+        "fields": {
+            "city": 43,
+            "name": "Mathbaria"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 569,
+        "fields": {
+            "city": 43,
+            "name": "Banaripara"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 570,
+        "fields": {
+            "city": 43,
+            "name": "Nazirpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 571,
+        "fields": {
+            "city": 44,
+            "name": "Chalna ankorage"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 572,
+        "fields": {
+            "city": 44,
+            "name": "Chitalmari"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 573,
+        "fields": {
+            "city": 44,
+            "name": "Fakirhat"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 574,
+        "fields": {
+            "city": 44,
+            "name": "Kachua"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 575,
+        "fields": {
+            "city": 44,
+            "name": "Mollahat"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 576,
+        "fields": {
+            "city": 44,
+            "name": "Morrelganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 577,
+        "fields": {
+            "city": 44,
+            "name": "Sarankhola"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 578,
+        "fields": {
+            "city": 44,
+            "name": "Rampal"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 579,
+        "fields": {
+            "city": 44,
+            "name": "Bagerhat sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 580,
+        "fields": {
+            "city": 44,
+            "name": "Kochua"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 581,
+        "fields": {
+            "city": 44,
+            "name": "Mollarhat"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 582,
+        "fields": {
+            "city": 44,
+            "name": "Morelganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 583,
+        "fields": {
+            "city": 44,
+            "name": "Kachua upo"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 584,
+        "fields": {
+            "city": 44,
+            "name": "Rayenda"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 585,
+        "fields": {
+            "city": 45,
+            "name": "Daulatpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 586,
+        "fields": {
+            "city": 45,
+            "name": "Shibalaya"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 587,
+        "fields": {
+            "city": 45,
+            "name": "Singair"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 588,
+        "fields": {
+            "city": 45,
+            "name": "Ghior"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 589,
+        "fields": {
+            "city": 45,
+            "name": "Harirampur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 590,
+        "fields": {
+            "city": 45,
+            "name": "Saturia"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 591,
+        "fields": {
+            "city": 45,
+            "name": "Manikganj sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 592,
+        "fields": {
+            "city": 46,
+            "name": "Laxmipasha"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 593,
+        "fields": {
+            "city": 46,
+            "name": "Kalia"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 594,
+        "fields": {
+            "city": 47,
+            "name": "Nababganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 595,
+        "fields": {
+            "city": 47,
+            "name": "Birampur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 596,
+        "fields": {
+            "city": 47,
+            "name": "Parbatipur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 597,
+        "fields": {
+            "city": 47,
+            "name": "Khansama"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 598,
+        "fields": {
+            "city": 47,
+            "name": "Biral"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 599,
+        "fields": {
+            "city": 47,
+            "name": "Birganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 600,
+        "fields": {
+            "city": 47,
+            "name": "Dinajpur sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 601,
+        "fields": {
+            "city": 47,
+            "name": "Chirirbandar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 602,
+        "fields": {
+            "city": 47,
+            "name": "Phulbari"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 603,
+        "fields": {
+            "city": 47,
+            "name": "Maharajganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 604,
+        "fields": {
+            "city": 47,
+            "name": "Setabganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 605,
+        "fields": {
+            "city": 47,
+            "name": "Osmanpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 606,
+        "fields": {
+            "city": 47,
+            "name": "Kaharole"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 607,
+        "fields": {
+            "city": 47,
+            "name": "Bangla hili"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 608,
+        "fields": {
+            "city": 47,
+            "name": "Hakimpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 609,
+        "fields": {
+            "city": 47,
+            "name": "Ghoraghat"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 610,
+        "fields": {
+            "city": 47,
+            "name": "Godagari"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 611,
+        "fields": {
+            "city": 47,
+            "name": "Chrirbandar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 612,
+        "fields": {
+            "city": 48,
+            "name": "Gobindaganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 613,
+        "fields": {
+            "city": 48,
+            "name": "Sadullapur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 614,
+        "fields": {
+            "city": 48,
+            "name": "Palashbari"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 615,
+        "fields": {
+            "city": 48,
+            "name": "Fulchhari"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 616,
+        "fields": {
+            "city": 48,
+            "name": "Saghatta"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 617,
+        "fields": {
+            "city": 48,
+            "name": "Sundarganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 618,
+        "fields": {
+            "city": 48,
+            "name": "Gaibandha sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 619,
+        "fields": {
+            "city": 49,
+            "name": "Kotalipara"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 620,
+        "fields": {
+            "city": 49,
+            "name": "Tungipara"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 621,
+        "fields": {
+            "city": 49,
+            "name": "Kashiani"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 622,
+        "fields": {
+            "city": 49,
+            "name": "Muksudpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 623,
+        "fields": {
+            "city": 49,
+            "name": "Maksudpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 624,
+        "fields": {
+            "city": 49,
+            "name": "Gopalganj sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 625,
+        "fields": {
+            "city": 49,
+            "name": "Golabganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 626,
+        "fields": {
+            "city": 50,
+            "name": "Kalai"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 627,
+        "fields": {
+            "city": 50,
+            "name": "Panchbibi"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 628,
+        "fields": {
+            "city": 50,
+            "name": "Akkelpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 629,
+        "fields": {
+            "city": 50,
+            "name": "Khetlal"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 630,
+        "fields": {
+            "city": 51,
+            "name": "Baghai chhari"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 631,
+        "fields": {
+            "city": 51,
+            "name": "Rangamati sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 632,
+        "fields": {
+            "city": 51,
+            "name": "Baghaichari"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 633,
+        "fields": {
+            "city": 51,
+            "name": "Barkal"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 634,
+        "fields": {
+            "city": 51,
+            "name": "Belaichari"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 635,
+        "fields": {
+            "city": 51,
+            "name": "Juraichari"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 636,
+        "fields": {
+            "city": 51,
+            "name": "Kaptai"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 637,
+        "fields": {
+            "city": 51,
+            "name": "Kaw khali"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 638,
+        "fields": {
+            "city": 51,
+            "name": "Langadu"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 639,
+        "fields": {
+            "city": 51,
+            "name": "Nanniarchar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 640,
+        "fields": {
+            "city": 51,
+            "name": "Rajosthali"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 641,
+        "fields": {
+            "city": 52,
+            "name": "Kurigram sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 642,
+        "fields": {
+            "city": 52,
+            "name": "Char rajibpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 643,
+        "fields": {
+            "city": 52,
+            "name": "Bhurungamari"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 644,
+        "fields": {
+            "city": 52,
+            "name": "Chilmari"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 645,
+        "fields": {
+            "city": 52,
+            "name": "Rajarhat"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 646,
+        "fields": {
+            "city": 52,
+            "name": "Nageshwari"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 647,
+        "fields": {
+            "city": 52,
+            "name": "Ulipur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 648,
+        "fields": {
+            "city": 52,
+            "name": "Raumari"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 649,
+        "fields": {
+            "city": 53,
+            "name": "Ramgati"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 650,
+        "fields": {
+            "city": 54,
+            "name": "Mujib nagar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 651,
+        "fields": {
+            "city": 54,
+            "name": "Meherpur sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 652,
+        "fields": {
+            "city": 54,
+            "name": "Gangni"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 653,
+        "fields": {
+            "city": 55,
+            "name": "Atrai"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 654,
+        "fields": {
+            "city": 55,
+            "name": "Mahadebpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 655,
+        "fields": {
+            "city": 55,
+            "name": "Patnitala"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 656,
+        "fields": {
+            "city": 55,
+            "name": "Sapahar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 657,
+        "fields": {
+            "city": 55,
+            "name": "Badalgachhi"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 658,
+        "fields": {
+            "city": 55,
+            "name": "Raninagar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 659,
+        "fields": {
+            "city": 55,
+            "name": "Dhamoirhat"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 660,
+        "fields": {
+            "city": 55,
+            "name": "Niamatpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 661,
+        "fields": {
+            "city": 55,
+            "name": "Porsha"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 662,
+        "fields": {
+            "city": 55,
+            "name": "Manda"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 663,
+        "fields": {
+            "city": 55,
+            "name": "Bagati para"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 664,
+        "fields": {
+            "city": 55,
+            "name": "Naogaon sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 665,
+        "fields": {
+            "city": 56,
+            "name": "Mohanganj thana"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 666,
+        "fields": {
+            "city": 56,
+            "name": "Kendua"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 667,
+        "fields": {
+            "city": 56,
+            "name": "Durgapur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 668,
+        "fields": {
+            "city": 56,
+            "name": "Kalmakanda"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 669,
+        "fields": {
+            "city": 56,
+            "name": "Atpara"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 670,
+        "fields": {
+            "city": 56,
+            "name": "Barhatta"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 671,
+        "fields": {
+            "city": 56,
+            "name": "Madan"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 672,
+        "fields": {
+            "city": 56,
+            "name": "Purbadhala"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 673,
+        "fields": {
+            "city": 56,
+            "name": "Khaliajuri"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 674,
+        "fields": {
+            "city": 56,
+            "name": "Purbadhola"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 675,
+        "fields": {
+            "city": 56,
+            "name": "Netrakona sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 676,
+        "fields": {
+            "city": 56,
+            "name": "Moddhynagar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 677,
+        "fields": {
+            "city": 56,
+            "name": "Dharmapasha"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 678,
+        "fields": {
+            "city": 57,
+            "name": "Bera"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 679,
+        "fields": {
+            "city": 57,
+            "name": "Sujanagar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 680,
+        "fields": {
+            "city": 57,
+            "name": "Santhia"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 681,
+        "fields": {
+            "city": 57,
+            "name": "Atgharia"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 682,
+        "fields": {
+            "city": 57,
+            "name": "Bhangura"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 683,
+        "fields": {
+            "city": 57,
+            "name": "Chatmohar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 684,
+        "fields": {
+            "city": 57,
+            "name": "Pabna sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 685,
+        "fields": {
+            "city": 58,
+            "name": "Kazipur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 686,
+        "fields": {
+            "city": 58,
+            "name": "Tarash"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 687,
+        "fields": {
+            "city": 58,
+            "name": "Ullah para"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 688,
+        "fields": {
+            "city": 58,
+            "name": "Belkuchi"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 689,
+        "fields": {
+            "city": 58,
+            "name": "Kamarkhanda"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 690,
+        "fields": {
+            "city": 58,
+            "name": "Royganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 691,
+        "fields": {
+            "city": 58,
+            "name": "Chauhali"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 692,
+        "fields": {
+            "city": 58,
+            "name": "Sirajganj sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 693,
+        "fields": {
+            "city": 59,
+            "name": "Shibgonj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 694,
+        "fields": {
+            "city": 59,
+            "name": "Chapainawabganj sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 695,
+        "fields": {
+            "city": 59,
+            "name": "Gomostapur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 696,
+        "fields": {
+            "city": 59,
+            "name": "Nachol"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 697,
+        "fields": {
+            "city": 59,
+            "name": "Volahat"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 698,
+        "fields": {
+            "city": 59,
+            "name": "Shibganj u.p.o"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 699,
+        "fields": {
+            "city": 59,
+            "name": "Rohanpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 700,
+        "fields": {
+            "city": 59,
+            "name": "Bholahat"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 701,
+        "fields": {
+            "city": 59,
+            "name": "Chapai sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 702,
+        "fields": {
+            "city": 60,
+            "name": "Thakurgaon sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 703,
+        "fields": {
+            "city": 60,
+            "name": "Baliadangi"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 704,
+        "fields": {
+            "city": 60,
+            "name": "Jibanpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 705,
+        "fields": {
+            "city": 60,
+            "name": "Pirganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 706,
+        "fields": {
+            "city": 60,
+            "name": "Rani sankail"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 707,
+        "fields": {
+            "city": 61,
+            "name": "Rajbari sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 708,
+        "fields": {
+            "city": 61,
+            "name": "Goalanda"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 709,
+        "fields": {
+            "city": 61,
+            "name": "Baliakandi"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 710,
+        "fields": {
+            "city": 61,
+            "name": "Kalukhali"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 711,
+        "fields": {
+            "city": 61,
+            "name": "Pangsha"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 712,
+        "fields": {
+            "city": 62,
+            "name": "Jhenaidah sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 713,
+        "fields": {
+            "city": 62,
+            "name": "Harinakunda"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 714,
+        "fields": {
+            "city": 62,
+            "name": "Naldanga"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 715,
+        "fields": {
+            "city": 62,
+            "name": "Kotchandpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 716,
+        "fields": {
+            "city": 62,
+            "name": "Maheshpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 717,
+        "fields": {
+            "city": 62,
+            "name": "Shailkupa"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 718,
+        "fields": {
+            "city": 63,
+            "name": "Anawara"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 719,
+        "fields": {
+            "city": 63,
+            "name": "Chittagong sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 720,
+        "fields": {
+            "city": 63,
+            "name": "East joara"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 721,
+        "fields": {
+            "city": 63,
+            "name": "Ramghar head office"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 722,
+        "fields": {
+            "city": 63,
+            "name": "Fatikchhari"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 723,
+        "fields": {
+            "city": 63,
+            "name": "Jarachhari"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 724,
+        "fields": {
+            "city": 63,
+            "name": "Matlobganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 725,
+        "fields": {
+            "city": 63,
+            "name": "Gorakghat"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 726,
+        "fields": {
+            "city": 63,
+            "name": "Longachh"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 727,
+        "fields": {
+            "city": 63,
+            "name": "Marishya"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 728,
+        "fields": {
+            "city": 63,
+            "name": "Barakal"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 729,
+        "fields": {
+            "city": 63,
+            "name": "Lohagara"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 730,
+        "fields": {
+            "city": 63,
+            "name": "Rouzan"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 731,
+        "fields": {
+            "city": 63,
+            "name": "Jaldi"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 732,
+        "fields": {
+            "city": 63,
+            "name": "Hathazari"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 733,
+        "fields": {
+            "city": 63,
+            "name": "Rajsthali"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 734,
+        "fields": {
+            "city": 63,
+            "name": "Boalkhali"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 735,
+        "fields": {
+            "city": 63,
+            "name": "Satkania"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 736,
+        "fields": {
+            "city": 63,
+            "name": "Kalampati"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 737,
+        "fields": {
+            "city": 63,
+            "name": "Naniachhar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 738,
+        "fields": {
+            "city": 63,
+            "name": "Bakalia thana"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 739,
+        "fields": {
+            "city": 63,
+            "name": "Chandgaon"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 740,
+        "fields": {
+            "city": 63,
+            "name": "Chittagong bandar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 741,
+        "fields": {
+            "city": 63,
+            "name": "Double mooring"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 742,
+        "fields": {
+            "city": 63,
+            "name": "Halishahar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 743,
+        "fields": {
+            "city": 63,
+            "name": "Khulshi"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 744,
+        "fields": {
+            "city": 63,
+            "name": "Pahartali"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 745,
+        "fields": {
+            "city": 63,
+            "name": "Panchlaish"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 746,
+        "fields": {
+            "city": 64,
+            "name": "Jhalokathi sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 747,
+        "fields": {
+            "city": 64,
+            "name": "Nalchhiti"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 748,
+        "fields": {
+            "city": 64,
+            "name": "Kathalia"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 749,
+        "fields": {
+            "city": 64,
+            "name": "Rajapur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 750,
+        "fields": {
+            "city": 65,
+            "name": "Ruma"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 751,
+        "fields": {
+            "city": 65,
+            "name": "Bandarban sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 752,
+        "fields": {
+            "city": 65,
+            "name": "Alikadam"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 753,
+        "fields": {
+            "city": 65,
+            "name": "Naikhong"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 754,
+        "fields": {
+            "city": 65,
+            "name": "Thanchi"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 755,
+        "fields": {
+            "city": 65,
+            "name": "Roanchhari"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 756,
+        "fields": {
+            "city": 66,
+            "name": "Baliadangi"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 757,
+        "fields": {
+            "city": 66,
+            "name": "Jibanpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 758,
+        "fields": {
+            "city": 66,
+            "name": "Pirganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 759,
+        "fields": {
+            "city": 66,
+            "name": "Bochaganj"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 760,
+        "fields": {
+            "city": 66,
+            "name": "Thakurgaon sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 761,
+        "fields": {
+            "city": 67,
+            "name": "Akhaura"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 762,
+        "fields": {
+            "city": 67,
+            "name": "Brahamanbaria sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 763,
+        "fields": {
+            "city": 67,
+            "name": "Sarail"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 764,
+        "fields": {
+            "city": 68,
+            "name": "Natore sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 765,
+        "fields": {
+            "city": 68,
+            "name": "Hatgurudaspur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 766,
+        "fields": {
+            "city": 68,
+            "name": "Singra"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 767,
+        "fields": {
+            "city": 68,
+            "name": "Laxman"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 768,
+        "fields": {
+            "city": 68,
+            "name": "Gopalpur upo"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 769,
+        "fields": {
+            "city": 68,
+            "name": "Natore sador"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 770,
+        "fields": {
+            "city": 68,
+            "name": "Harua"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 771,
+        "fields": {
+            "city": 69,
+            "name": "Joypurhat sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 772,
+        "fields": {
+            "city": 69,
+            "name": "Kalai"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 773,
+        "fields": {
+            "city": 69,
+            "name": "Panchbibi"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 774,
+        "fields": {
+            "city": 69,
+            "name": "Akkelpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 775,
+        "fields": {
+            "city": 69,
+            "name": "Khetlal"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 776,
+        "fields": {
+            "city": 70,
+            "name": "Narail sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 777,
+        "fields": {
+            "city": 71,
+            "name": "Sarsa"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 778,
+        "fields": {
+            "city": 71,
+            "name": "Jessore sadar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 779,
+        "fields": {
+            "city": 71,
+            "name": "Monirampur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 780,
+        "fields": {
+            "city": 71,
+            "name": "Abhaynagar"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 781,
+        "fields": {
+            "city": 71,
+            "name": "Keshabpur"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 782,
+        "fields": {
+            "city": 71,
+            "name": "Bagherpara"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 783,
+        "fields": {
+            "city": 71,
+            "name": "Chougachha"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 784,
+        "fields": {
+            "city": 71,
+            "name": "Jhikargacha"
+        }
+    },
+    {
+        "model": "delivery.thana",
+        "pk": 785,
+        "fields": {
+            "city": 71,
+            "name": "Sharsha"
+        }
+    }
+]

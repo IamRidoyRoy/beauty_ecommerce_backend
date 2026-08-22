@@ -1,85 +1,246 @@
 from decimal import Decimal
 import uuid
-from django.db import transaction,IntegrityError
+
+from django.conf import settings
+from django.db import IntegrityError, transaction
 from django.db.models import F
-from rest_framework.exceptions import APIException,ValidationError
-from apps.accounts.models import User,Address
-from apps.accounts.utils import normalize_phone,PhoneFormatError
+from rest_framework.exceptions import ValidationError
+
+from apps.accounts.models import Address, User
 from apps.accounts.serializers import jwt_for_user
-from apps.carts.models import Cart,CartItem
-from apps.inventory.services import resolve_stock_item,get_sellable_stock,reserve_stock,release_stock,consume_reserved_stock
-from apps.promotions.models import CouponUsage,Coupon
-from apps.promotions.services import validate_coupon,calculate_promotions
-from apps.payments.services import create_payment
+from apps.accounts.utils import PhoneFormatError, normalize_phone
+from apps.carts.models import Cart, CartItem
+from apps.common.models import CheckoutSettings
 from apps.catalog.models import ProductImage
-from .models import Order,OrderItem
+from apps.delivery.services import resolve_delivery_quote
+from apps.inventory.services import consume_reserved_stock, get_sellable_stock, release_stock, reserve_stock, resolve_stock_item
+from apps.payments.services import create_payment
+from apps.promotions.models import Coupon, CouponUsage
+from apps.promotions.services import calculate_promotions, validate_coupon
 
-class AccountExistsVerificationRequired(APIException):
-    status_code=409; default_code="ACCOUNT_EXISTS_VERIFICATION_REQUIRED"; default_detail="An account already exists for this phone. Login or verify by OTP."
+from .models import Order, OrderItem
 
-def _order_number(): return f"ORD-{uuid.uuid4().hex[:12].upper()}"
+
+def _order_number():
+    return f"ORD-{uuid.uuid4().hex[:12].upper()}"
+
+
 def _variant_snapshot(variant):
-    if not variant:return {}
-    return {v.attribute.name:v.value for v in variant.attributes.select_related("attribute").all()}
-def _image_snapshot(product,variant=None):
-    q=ProductImage.objects.filter(product=product)
+    if not variant:
+        return {}
+    return {v.attribute.name: v.value for v in variant.attributes.select_related("attribute").all()}
+
+
+def _image_snapshot(product, variant=None):
+    q = ProductImage.objects.filter(product=product)
     if variant:
-        image=q.filter(variant=variant,is_primary=True).first() or q.filter(variant=variant).order_by("order").first()
-        if image:return image.image.name
-    image=q.filter(variant__isnull=True,is_primary=True).first() or q.filter(variant__isnull=True).order_by("order").first()
+        image = q.filter(variant=variant, is_primary=True).first() or q.filter(variant=variant).order_by("order").first()
+        if image:
+            return image.image.name
+    image = q.filter(variant__isnull=True, is_primary=True).first() or q.filter(variant__isnull=True).order_by("order").first()
     return image.image.name if image else ""
+
 
 def _prevalidate_stock(items):
     for item in items:
-        si=resolve_stock_item(product=item.product,variant=item.product_variant)
-        if get_sellable_stock(stock_item=si)<item.quantity: raise ValidationError({"stock":f"Insufficient stock for cart item {item.id}."})
+        si = resolve_stock_item(product=item.product, variant=item.product_variant)
+        if get_sellable_stock(stock_item=si) < item.quantity:
+            raise ValidationError({"stock": f"Insufficient stock for cart item {item.id}."})
 
-def _address_payload(data): return {k:data[k] for k in ("name","phone","district","thana","address")}|{"label":data.get("label","")}
+
+def _address_payload(data, quote):
+    return {
+        "name": data["name"],
+        "phone": data["phone"],
+        "district": quote.district.name,
+        "district_id": quote.district.id,
+        "thana": quote.thana.name,
+        "thana_id": quote.thana.id,
+        "address": data["address"],
+        "label": data.get("label", ""),
+        "delivery_module": {
+            "id": quote.module.id,
+            "code": quote.module.code,
+            "name": quote.module.name,
+            "charge": str(quote.charge),
+        },
+    }
+
 
 @transaction.atomic
-def checkout(*,cart,customer_data,shipping_method,payment_method,coupon_code="",request_user=None):
-    cart=Cart.objects.select_for_update().get(pk=cart.pk,is_active=True)
-    items=list(CartItem.objects.select_for_update().filter(cart=cart).select_related("product__brand","product__category","product_variant__product__brand","product_variant__product__category").prefetch_related("product_variant__attributes__attribute"))
-    if not items: raise ValidationError({"cart":"Cart is empty."})
+def checkout(*, cart, customer_data, shipping_method, payment_method, coupon_code="", request_user=None, order_note=""):
+    cart = Cart.objects.select_for_update().get(pk=cart.pk, is_active=True)
+    items = list(
+        CartItem.objects.select_for_update()
+        .filter(cart=cart)
+        .select_related(
+            "product__brand", "product__category",
+            "product_variant__product__brand", "product_variant__product__category",
+        )
+        .prefetch_related("product_variant__attributes__attribute")
+    )
+    if not items:
+        raise ValidationError({"cart": "Cart is empty."})
     _prevalidate_stock(items)
-    try: phone=normalize_phone(customer_data["phone"])
-    except PhoneFormatError as exc: raise ValidationError({"phone":str(exc)})
-    customer_data={**customer_data,"phone":phone}; account_created=False
+
+    try:
+        phone = normalize_phone(customer_data["phone"])
+    except PhoneFormatError as exc:
+        raise ValidationError({"phone": str(exc)})
+
+    district = customer_data["district"]
+    thana = customer_data["thana"]
+    quote = resolve_delivery_quote(district=district, thana=thana)
+    customer_data = {**customer_data, "phone": phone}
+
+    account_created = False
+    existing_account = False
+    verification_required = False
+    save_address_to_account = False
+
     if request_user and request_user.is_authenticated:
-        user=request_user
-        if user.phone and user.phone!=phone: raise ValidationError({"phone":"Checkout phone must match the authenticated account phone."})
+        user = request_user
+        if user.phone and user.phone != phone:
+            raise ValidationError({"phone": "Checkout phone must match the authenticated account phone."})
+        save_address_to_account = True
     else:
-        existing=User.objects.filter(phone=phone).first()
-        if existing: raise AccountExistsVerificationRequired()
-        try:
-            with transaction.atomic(): user=User.objects.create_user(phone=phone,full_name=customer_data["name"])
-        except IntegrityError:
-            raise AccountExistsVerificationRequired()
-        account_created=True
-    address_data=_address_payload(customer_data)
-    address, _ = Address.objects.get_or_create(user=user,**address_data,defaults={"is_default":not user.addresses.exists()})
-    subtotal=sum((i.line_total for i in items),Decimal("0"))
-    promo=calculate_promotions(cart=cart,user=user); promo_discount=promo["discount"]
-    coupon_result=None; coupon_discount=Decimal("0"); free_shipping=False
+        # Business rule: an existing phone must NOT block guest checkout.
+        # We attach the order to the existing account for order history, but we
+        # never issue JWTs or modify that account's saved addresses unless the
+        # customer has authenticated.
+        existing = User.objects.filter(phone=phone).first()
+        if existing:
+            user = existing
+            existing_account = True
+        else:
+            try:
+                with transaction.atomic():
+                    user = User.objects.create_user(phone=phone, full_name=customer_data["name"])
+            except IntegrityError:
+                # A concurrent checkout may have created the phone first.
+                user = User.objects.select_for_update().get(phone=phone)
+                existing_account = True
+            else:
+                account_created = True
+                save_address_to_account = True
+
+    address_snapshot = _address_payload(customer_data, quote)
+    address = None
+    if save_address_to_account:
+        address_defaults = {"is_default": not user.addresses.exists()}
+        address, _ = Address.objects.get_or_create(
+            user=user,
+            name=customer_data["name"],
+            phone=phone,
+            district=quote.district.name,
+            thana=quote.thana.name,
+            address=customer_data["address"],
+            label=customer_data.get("label", ""),
+            defaults=address_defaults,
+        )
+
+    subtotal = sum((i.line_total for i in items), Decimal("0"))
+    promo = calculate_promotions(cart=cart, user=user)
+    promo_discount = promo["discount"]
+    coupon_result = None
+    coupon_discount = Decimal("0")
+    free_shipping = False
     if coupon_code:
-        coupon_result=validate_coupon(code=coupon_code,cart=cart,user=user,lock=True); coupon_discount=coupon_result["discount"]; free_shipping=coupon_result["free_shipping"]
-    discount=min(subtotal,promo_discount+coupon_discount)
-    shipping_charge=Decimal("0") if free_shipping else Decimal(str(shipping_method.charge_for(subtotal-discount)))
-    tax=Decimal("0.00"); total=max(Decimal("0"),subtotal-discount+shipping_charge+tax)
-    order=Order.objects.create(order_number=_order_number(),user=user,customer_name=customer_data["name"],customer_phone=phone,shipping_address_snapshot=_address_payload(customer_data),shipping_method=shipping_method,coupon_code_snapshot=coupon_result["coupon"].code if coupon_result else "",promotion_snapshot=promo["applied"],subtotal=subtotal,discount=discount,shipping_charge=shipping_charge,tax=tax,total=total)
+        coupon_result = validate_coupon(code=coupon_code, cart=cart, user=user, lock=True)
+        coupon_discount = coupon_result["discount"]
+        free_shipping = coupon_result["free_shipping"]
+
+    discount = min(subtotal, promo_discount + coupon_discount)
+    net_subtotal = subtotal - discount
+    threshold_free = bool(
+        shipping_method
+        and shipping_method.free_threshold is not None
+        and net_subtotal >= shipping_method.free_threshold
+    )
+    shipping_charge = Decimal("0") if (free_shipping or threshold_free) else quote.charge
+    tax = Decimal("0.00")
+    total = max(Decimal("0"), subtotal - discount + shipping_charge + tax)
+
+    order = Order.objects.create(
+        order_number=_order_number(),
+        user=user,
+        customer_name=customer_data["name"],
+        customer_phone=phone,
+        shipping_address_snapshot=address_snapshot,
+        shipping_method=shipping_method,
+        coupon_code_snapshot=coupon_result["coupon"].code if coupon_result else "",
+        promotion_snapshot=promo["applied"],
+        subtotal=subtotal,
+        discount=discount,
+        shipping_charge=shipping_charge,
+        tax=tax,
+        total=total,
+        notes=order_note,
+    )
+
     for cart_item in items:
-        product=cart_item.product if cart_item.product_id else cart_item.product_variant.product; variant=cart_item.product_variant
-        cost=(variant.cost_price if variant and variant.cost_price is not None else product.cost_price) or Decimal("0")
-        order_item=OrderItem.objects.create(order=order,product=product,variant=variant,product_name_snapshot=product.name,sku_snapshot=product.sku if cart_item.product_id else variant.sku,variant_snapshot=_variant_snapshot(variant),image_snapshot=_image_snapshot(product,variant),quantity=cart_item.quantity,unit_price=cart_item.unit_price,total=cart_item.line_total,cost_price_snapshot=cost)
-        si=resolve_stock_item(product=cart_item.product,variant=cart_item.product_variant)
-        reserve_stock(stock_item=si,quantity=cart_item.quantity,reference_type="order_item",reference_id=order_item.id,created_by=user if user.is_staff else None)
-    payment=create_payment(order=order,method=payment_method,amount=total)
+        product = cart_item.product if cart_item.product_id else cart_item.product_variant.product
+        variant = cart_item.product_variant
+        cost = (variant.cost_price if variant and variant.cost_price is not None else product.cost_price) or Decimal("0")
+        order_item = OrderItem.objects.create(
+            order=order,
+            product=product,
+            variant=variant,
+            product_name_snapshot=product.name,
+            sku_snapshot=product.sku if cart_item.product_id else variant.sku,
+            variant_snapshot=_variant_snapshot(variant),
+            image_snapshot=_image_snapshot(product, variant),
+            quantity=cart_item.quantity,
+            unit_price=cart_item.unit_price,
+            total=cart_item.line_total,
+            cost_price_snapshot=cost,
+        )
+        si = resolve_stock_item(product=cart_item.product, variant=cart_item.product_variant)
+        reserve_stock(
+            stock_item=si,
+            quantity=cart_item.quantity,
+            reference_type="order_item",
+            reference_id=order_item.id,
+            created_by=user if user.is_staff else None,
+        )
+
+    payment = create_payment(order=order, method=payment_method, amount=total)
     if coupon_result:
-        Coupon.objects.select_for_update().filter(pk=coupon_result["coupon"].pk).update(used_count=F("used_count")+1)
-        CouponUsage.objects.create(coupon=coupon_result["coupon"],user=user,order=order)
-    cart.is_active=False; cart.save(update_fields=["is_active","updated_at"])
-    result={"order":order,"payment":payment,"account_created":account_created,"address":address}
-    if account_created: result["auth"]=jwt_for_user(user)
+        Coupon.objects.select_for_update().filter(pk=coupon_result["coupon"].pk).update(used_count=F("used_count") + 1)
+        CouponUsage.objects.create(coupon=coupon_result["coupon"], user=user, order=order)
+
+    cart.is_active = False
+    cart.save(update_fields=["is_active", "updated_at"])
+
+    if existing_account and not (request_user and request_user.is_authenticated):
+        checkout_settings = CheckoutSettings.current()
+        verification_required = (
+            checkout_settings.existing_customer_otp_verification
+            if checkout_settings is not None
+            else True
+        )
+
+    result = {
+        "order": order,
+        "payment": payment,
+        "account_created": account_created,
+        "existing_account": existing_account,
+        "verification_required": verification_required,
+        "address": address,
+        "delivery": {
+            "module": quote.module.code,
+            "module_name": quote.module.name,
+            "charge": str(shipping_charge),
+            "base_area_charge": str(quote.charge),
+        },
+    }
+    if account_created:
+        result["auth"] = jwt_for_user(user)
+    elif existing_account and not verification_required:
+        # Development/test-only bypass. Production settings force this off.
+        if settings.DEBUG and getattr(settings, "ALLOW_INSECURE_EXISTING_CUSTOMER_AUTO_LOGIN", False):
+            result["auth"] = jwt_for_user(user)
+            result["verification_bypassed"] = True
     return result
 
 TRANSITIONS={

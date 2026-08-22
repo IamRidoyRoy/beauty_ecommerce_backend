@@ -12,7 +12,7 @@ INSTALLED_APPS = [
     "django.contrib.messages", "django.contrib.staticfiles",
     "corsheaders", "rest_framework", "rest_framework_simplejwt.token_blacklist", "django_filters", "drf_spectacular",
     "apps.common", "apps.accounts", "apps.catalog", "apps.inventory", "apps.carts", "apps.promotions",
-    "apps.orders", "apps.payments", "apps.shipping", "apps.returns", "apps.reviews", "apps.reports", "apps.notifications",
+    "apps.orders", "apps.payments", "apps.shipping", "apps.delivery", "apps.returns", "apps.reviews", "apps.reports", "apps.notifications",
 ]
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware", "django.middleware.security.SecurityMiddleware", "whitenoise.middleware.WhiteNoiseMiddleware",

@@ -1,0 +1,570 @@
+[
+    {
+        "model": "delivery.city",
+        "pk": 1,
+        "fields": {
+            "name": "Dhaka",
+            "delivery_module": 1
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 2,
+        "fields": {
+            "name": "Chittagong",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 3,
+        "fields": {
+            "name": "Comilla",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 4,
+        "fields": {
+            "name": "Noakhali",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 5,
+        "fields": {
+            "name": "Feni",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 6,
+        "fields": {
+            "name": "Lakhshmipur",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 7,
+        "fields": {
+            "name": "Brahmanbaria",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 8,
+        "fields": {
+            "name": "Chandpur",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 9,
+        "fields": {
+            "name": "Rajshahi",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 10,
+        "fields": {
+            "name": "Bogra",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 11,
+        "fields": {
+            "name": "Rangpur",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 12,
+        "fields": {
+            "name": "Nilphamari",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 13,
+        "fields": {
+            "name": "Khulna",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 14,
+        "fields": {
+            "name": "Jessore",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 15,
+        "fields": {
+            "name": "Kushtia",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 16,
+        "fields": {
+            "name": "Satkhira",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 17,
+        "fields": {
+            "name": "Sylhet",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 18,
+        "fields": {
+            "name": "Moulvibazar",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 19,
+        "fields": {
+            "name": "Habiganj",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 20,
+        "fields": {
+            "name": "Barisal",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 21,
+        "fields": {
+            "name": "Mymensingh",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 22,
+        "fields": {
+            "name": "Narayanganj",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 23,
+        "fields": {
+            "name": "Kishoreganj",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 24,
+        "fields": {
+            "name": "Tangail",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 25,
+        "fields": {
+            "name": "Gazipur",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 26,
+        "fields": {
+            "name": "Cox's bazar",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 27,
+        "fields": {
+            "name": "Sherpur",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 28,
+        "fields": {
+            "name": "Narsingdi",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 29,
+        "fields": {
+            "name": "Chuadanga",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 30,
+        "fields": {
+            "name": "Sunamganj",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 31,
+        "fields": {
+            "name": "Madaripur",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 32,
+        "fields": {
+            "name": "Lalmonirhat",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 33,
+        "fields": {
+            "name": "Panchagarh",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 34,
+        "fields": {
+            "name": "Munshiganj",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 35,
+        "fields": {
+            "name": "Khagrachhari",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 36,
+        "fields": {
+            "name": "Faridpur",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 37,
+        "fields": {
+            "name": "Magura",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 38,
+        "fields": {
+            "name": "Patuakhali",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 39,
+        "fields": {
+            "name": "Barguna",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 40,
+        "fields": {
+            "name": "Jamalpur",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 41,
+        "fields": {
+            "name": "Bhola",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 42,
+        "fields": {
+            "name": "Shariatpur",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 43,
+        "fields": {
+            "name": "Pirojpur",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 44,
+        "fields": {
+            "name": "Bagerhat",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 45,
+        "fields": {
+            "name": "Manikganj",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 46,
+        "fields": {
+            "name": "Naraiil",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 47,
+        "fields": {
+            "name": "Dinajpur",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 48,
+        "fields": {
+            "name": "Gaibandha",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 49,
+        "fields": {
+            "name": "Gopalganj",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 50,
+        "fields": {
+            "name": "Jaypurhat",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 51,
+        "fields": {
+            "name": "Rangamati",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 52,
+        "fields": {
+            "name": "Kurigram",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 53,
+        "fields": {
+            "name": "Lakshmipur",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 54,
+        "fields": {
+            "name": "Meherpur",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 55,
+        "fields": {
+            "name": "Naogaon",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 56,
+        "fields": {
+            "name": "Netrokona",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 57,
+        "fields": {
+            "name": "Pabna",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 58,
+        "fields": {
+            "name": "Sirajganj",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 59,
+        "fields": {
+            "name": "Chapainawabganj",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 60,
+        "fields": {
+            "name": "Thakurgaon",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 61,
+        "fields": {
+            "name": "Rajbari",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 62,
+        "fields": {
+            "name": "Jhenaidah",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 63,
+        "fields": {
+            "name": "Chittagong City",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 64,
+        "fields": {
+            "name": "Jhalokati",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 65,
+        "fields": {
+            "name": "Bandarban",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 66,
+        "fields": {
+            "name": "Takurgaon",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 67,
+        "fields": {
+            "name": "Brahamanbaria",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 68,
+        "fields": {
+            "name": "Natore",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 69,
+        "fields": {
+            "name": "Joypurhat",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 70,
+        "fields": {
+            "name": "Narail",
+            "delivery_module": 2
+        }
+    },
+    {
+        "model": "delivery.city",
+        "pk": 71,
+        "fields": {
+            "name": "Jashore",
+            "delivery_module": 2
+        }
+    }
+]

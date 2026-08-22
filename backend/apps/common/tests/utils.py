@@ -19,3 +19,13 @@ def variable_product(sku="VAR-1",stock=10):
     attr,_=Attribute.objects.get_or_create(name="Shade",slug="shade"); val,_=AttributeValue.objects.get_or_create(attribute=attr,slug=f"shade-{sku.lower()}",defaults={"value":"Beige"})
     v=ProductVariant.objects.create(product=p,sku=sku,price_override=Decimal("130.00"),cost_price=Decimal("70.00")); VariantAttributeValue.objects.create(variant=v,attribute_value=val)
     si=resolve_stock_item(variant=v); increase_stock(stock_item=si,warehouse=wh,quantity=stock); return p,v,si,wh
+
+
+def delivery_location(module_code="inside_dhaka", charge="60.00", city_name="Dhaka", thana_name="Dhanmondi"):
+    from apps.delivery.models import DeliveryModule, City, Thana
+    module, _ = DeliveryModule.objects.get_or_create(code=module_code, defaults={"name": module_code.replace("_", " ").title(), "charge": Decimal(charge), "active": True})
+    city, _ = City.objects.get_or_create(name=city_name, defaults={"delivery_module": module, "active": True})
+    if city.delivery_module_id != module.id:
+        city.delivery_module = module; city.save(update_fields=["delivery_module", "updated_at"])
+    thana, _ = Thana.objects.get_or_create(city=city, name=thana_name, defaults={"active": True})
+    return city, thana, module

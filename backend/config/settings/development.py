@@ -6,3 +6,6 @@ CELERY_TASK_ALWAYS_EAGER = True
 CELERY_TASK_EAGER_PROPAGATES = True
 CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:5173", "http://127.0.0.1:5173"]
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+# Development-only existing-account auto-login bypass.
+ALLOW_INSECURE_EXISTING_CUSTOMER_AUTO_LOGIN = True

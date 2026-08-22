@@ -1,4 +1,5 @@
 from django.conf import settings
+import logging
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
@@ -12,6 +13,8 @@ from apps.common.responses import success
 from apps.notifications.services import queue_notification
 from apps.notifications.models import Notification
 
+logger = logging.getLogger(__name__)
+
 class LoginView(APIView):
     permission_classes = [AllowAny]; throttle_classes=[AuthRateThrottle]
     def post(self, request):
@@ -24,7 +27,17 @@ class OTPRequestView(APIView):
         except PhoneFormatError as exc: raise ValidationError({"phone":str(exc)})
         if not phone or not User.objects.filter(phone=phone,is_active=True).exists(): raise ValidationError({"phone":"Active account not found."})
         code=create_otp(phone,OTPChallenge.Purpose.LOGIN)
-        queue_notification(channel=Notification.Channel.SMS,body=f"Your verification code is {code}",metadata={"phone":phone,"purpose":"login"})
+        try:
+            queue_notification(channel=Notification.Channel.SMS,body=f"Your verification code is {code}",metadata={"phone":phone,"purpose":"login"})
+        except Exception as exc:
+            # Development must remain usable without Redis/Celery/SMS. The OTP
+            # is returned below when DEBUG=True. Production fails explicitly.
+            logger.exception("Unable to queue OTP SMS for %s", phone)
+            if not settings.DEBUG:
+                error = APIException("OTP delivery service is temporarily unavailable.")
+                error.status_code = 503
+                error.default_code = "OTP_DELIVERY_UNAVAILABLE"
+                raise error from exc
         data={"expires_in":300};
         if settings.DEBUG:data["development_otp"]=code
         return success(data,"OTP sent.")
@@ -33,7 +46,10 @@ class OTPVerifyView(APIView):
     def post(self,request):
         try: phone=normalize_phone(request.data.get("phone",""))
         except PhoneFormatError as exc: raise ValidationError({"phone":str(exc)})
-        code=request.data.get("code","").strip(); user=verify_otp(phone,code,OTPChallenge.Purpose.LOGIN)
+        code=str(request.data.get("code","")).strip()
+        if len(code) != 6 or not code.isdigit():
+            raise ValidationError({"otp":"Enter the 6-digit OTP code."})
+        user=verify_otp(phone,code,OTPChallenge.Purpose.LOGIN)
         if not user: raise ValidationError({"phone":"Account not found."})
         return success({"user":UserSerializer(user).data,"auth":jwt_for_user(user)},"Phone verified.")
 class GoogleProviderNotConfigured(APIException):

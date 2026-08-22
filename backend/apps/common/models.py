@@ -28,3 +28,30 @@ class AnalyticsEvent(TimeStampedModel):
     metadata = models.JSONField(default=dict, blank=True)
     class Meta:
         indexes = [models.Index(fields=["event_type", "created_at"]), models.Index(fields=["product_id_ref", "created_at"])]
+
+
+class CheckoutSettings(TimeStampedModel):
+    existing_customer_otp_verification = models.BooleanField(
+        default=True,
+        verbose_name="Existing customer OTP verification",
+        help_text=(
+            "When enabled, anonymous checkout with an existing phone requires OTP before account access. "
+            "When disabled, development can auto-login that existing customer after a successful order."
+        ),
+    )
+
+    class Meta:
+        verbose_name = "Checkout setting"
+        verbose_name_plural = "Checkout settings"
+
+    def save(self, *args, **kwargs):
+        self.pk = 1
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def current(cls):
+        obj = cls.objects.filter(pk=1).only("existing_customer_otp_verification").first()
+        return obj
+
+    def __str__(self):
+        return "Checkout settings"

@@ -65,6 +65,9 @@ class OTPChallenge(TimeStampedModel):
     class Purpose(models.TextChoices): LOGIN="login","Login"; VERIFY_PHONE="verify_phone","Verify Phone"
     phone = models.CharField(max_length=24, db_index=True)
     code_hash = models.CharField(max_length=255)
+    # Readable OTP is stored only in DEBUG mode for local development/admin troubleshooting.
+    # Production rows keep this empty; verification always uses code_hash.
+    debug_code = models.CharField(max_length=6, blank=True, default="")
     purpose = models.CharField(max_length=20, choices=Purpose.choices)
     expires_at = models.DateTimeField()
     consumed_at = models.DateTimeField(null=True, blank=True)

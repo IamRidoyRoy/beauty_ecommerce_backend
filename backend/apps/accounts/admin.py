@@ -4,7 +4,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 
 from apps.common.admin_utils import register_app_models
-from .models import User
+from .models import OTPChallenge, User
 
 
 class UserCreationAdminForm(forms.ModelForm):
@@ -123,5 +123,41 @@ class UserAdmin(BaseUserAdmin):
     )
 
 
-# Address and OTPChallenge are still available from Django Admin.
-register_app_models("accounts", exclude={User})
+@admin.register(OTPChallenge)
+class OTPChallengeAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "phone",
+        "purpose",
+        "debug_code",
+        "attempts",
+        "expires_at",
+        "consumed_at",
+        "created_at",
+    )
+    list_filter = ("purpose", "consumed_at")
+    search_fields = ("phone",)
+    ordering = ("-id",)
+    readonly_fields = (
+        "phone",
+        "purpose",
+        "debug_code",
+        "code_hash",
+        "attempts",
+        "expires_at",
+        "consumed_at",
+        "created_at",
+        "updated_at",
+    )
+
+    def has_add_permission(self, request):
+        # OTPs must be created through the service so hashing/expiry rules are
+        # always applied.
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+
+# Address remains available through the generic admin registration.
+register_app_models("accounts", exclude={User, OTPChallenge})

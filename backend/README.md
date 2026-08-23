@@ -234,3 +234,28 @@ images=<file 2>
 `primary_index` is zero-based within the uploaded files and becomes the storefront Feature Image for a base product gallery (or the primary image for a variant gallery). If the first gallery has no primary image and `primary_index` is omitted, the first uploaded image is promoted automatically. Deleting the current primary image promotes the next image in gallery order.
 
 Uploaded media is served from `MEDIA_URL=/media/` in development. The customer storefront should point `NEXT_PUBLIC_API_BASE_URL` at this Django host; media defaults to the same host automatically.
+
+## Storefront hero slider
+
+Hero slides are now managed from the management API and rendered by the customer homepage.
+
+Public endpoint:
+
+```text
+GET /api/v1/hero-slides/
+```
+
+Management endpoint:
+
+```text
+/api/v1/admin/hero-slides/
+```
+
+After replacing this source in an existing database, create/apply the new `common.HeroSlide` migration:
+
+```bash
+python manage.py makemigrations common
+python manage.py migrate
+```
+
+Hero slide media is stored under `MEDIA_ROOT/hero_slides/`.

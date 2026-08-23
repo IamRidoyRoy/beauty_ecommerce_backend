@@ -2,6 +2,7 @@ from django.test import TestCase
 from rest_framework.test import APIClient
 
 from apps.accounts.models import User
+from apps.carts.models import Cart
 from apps.common.tests.utils import simple_product, variable_product
 
 
@@ -90,6 +91,62 @@ class AnonymousCartTests(TestCase):
             format="json",
         )
         self.assertEqual(response.status_code, 400)
+
+
+    def test_stale_guest_cart_token_recovers_for_simple_product(self):
+        product, _, _ = simple_product()
+        stale = Cart.objects.create()
+        stale_token = str(stale.token)
+        stale.delete()
+
+        response = self.client.post(
+            "/api/v1/cart/items/",
+            {"product": product.id, "quantity": 1},
+            format="json",
+            HTTP_X_CART_TOKEN=stale_token,
+        )
+
+        self.assertEqual(response.status_code, 201)
+        self.assertNotEqual(response.data["data"]["cart_token"], stale_token)
+        self.assertEqual(response.data["data"]["item"]["product"], product.id)
+
+    def test_stale_guest_cart_token_recovers_for_variable_product(self):
+        product, variant, _, _ = variable_product()
+        stale = Cart.objects.create()
+        stale_token = str(stale.token)
+        stale.delete()
+
+        response = self.client.post(
+            "/api/v1/cart/items/",
+            {
+                "product": product.id,
+                "product_variant": variant.id,
+                "quantity": 1,
+            },
+            format="json",
+            HTTP_X_CART_TOKEN=stale_token,
+        )
+
+        self.assertEqual(response.status_code, 201)
+        self.assertNotEqual(response.data["data"]["cart_token"], stale_token)
+        self.assertEqual(
+            response.data["data"]["item"]["product_variant"],
+            variant.id,
+        )
+
+    def test_stale_guest_cart_token_recovers_for_cart_get(self):
+        stale = Cart.objects.create()
+        stale_token = str(stale.token)
+        stale.delete()
+
+        response = self.client.get(
+            "/api/v1/cart/",
+            HTTP_X_CART_TOKEN=stale_token,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotEqual(response.data["data"]["token"], stale_token)
+        self.assertEqual(response.data["data"]["items"], [])
 
     def test_stock_limit(self):
         product, _, _ = simple_product(stock=2)

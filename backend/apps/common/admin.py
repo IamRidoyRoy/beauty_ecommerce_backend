@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.db import OperationalError, ProgrammingError
 
 from apps.common.admin_utils import register_app_models
-from .models import CheckoutSettings
+from .models import CheckoutSettings, HeroSlide
 
 
 @admin.register(CheckoutSettings)
@@ -21,4 +21,12 @@ class CheckoutSettingsAdmin(admin.ModelAdmin):
         return False
 
 
-register_app_models("common", exclude={CheckoutSettings})
+@admin.register(HeroSlide)
+class HeroSlideAdmin(admin.ModelAdmin):
+    list_display = ("title", "active", "order", "starts_at", "ends_at", "updated_at")
+    list_filter = ("active", "text_position", "theme")
+    search_fields = ("title", "subtitle", "eyebrow")
+    ordering = ("order", "id")
+
+
+register_app_models("common", exclude={CheckoutSettings, HeroSlide})

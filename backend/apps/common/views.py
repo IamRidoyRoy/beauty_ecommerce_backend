@@ -1,10 +1,12 @@
 from django.conf import settings
 from django.core.management import call_command
 from django.db.models import Q
+from django.utils import timezone
 from rest_framework import serializers
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
+from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.viewsets import ModelViewSet
 
 from apps.accounts.models import User, UserRole
@@ -13,7 +15,7 @@ from apps.inventory.models import Purchase, Supplier
 from apps.orders.models import Order
 from apps.promotions.models import Coupon
 from apps.shipping.models import Shipment
-from .models import AnalyticsEvent, CheckoutSettings
+from .models import AnalyticsEvent, CheckoutSettings, HeroSlide
 from .permissions import role_permission
 from .responses import success
 
@@ -30,6 +32,50 @@ class AnalyticsEventView(APIView):
         serializer.save(user=request.user if request.user.is_authenticated else None)
         return success(message='Event recorded.',status=201)
 
+
+class HeroSlideSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HeroSlide
+        fields = (
+            "id", "eyebrow", "title", "subtitle", "image", "mobile_image", "image_alt",
+            "primary_cta_label", "primary_cta_url", "secondary_cta_label", "secondary_cta_url",
+            "text_position", "theme", "overlay_opacity", "active", "order", "starts_at", "ends_at",
+            "created_at", "updated_at",
+        )
+        read_only_fields = ("id", "created_at", "updated_at")
+
+    def validate_overlay_opacity(self, value):
+        if value > 90:
+            raise serializers.ValidationError("Overlay opacity must be between 0 and 90.")
+        return value
+
+    def validate(self, attrs):
+        starts_at = attrs.get("starts_at", getattr(self.instance, "starts_at", None))
+        ends_at = attrs.get("ends_at", getattr(self.instance, "ends_at", None))
+        if starts_at and ends_at and ends_at <= starts_at:
+            raise serializers.ValidationError({"ends_at": "End time must be after the start time."})
+        return attrs
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data["image"] = instance.image.url if instance.image else None
+        data["mobile_image"] = instance.mobile_image.url if instance.mobile_image else None
+        return data
+
+
+class HeroSlideListView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        now = timezone.now()
+        queryset = (
+            HeroSlide.objects.filter(active=True)
+            .filter(Q(starts_at__isnull=True) | Q(starts_at__lte=now))
+            .filter(Q(ends_at__isnull=True) | Q(ends_at__gte=now))
+            .order_by("order", "id")
+        )
+        return success(HeroSlideSerializer(queryset, many=True, context={"request": request}).data)
+
 DemoAdmin=role_permission(UserRole.SUPER_ADMIN,UserRole.ADMIN)
 ManagementAdmin=role_permission(UserRole.SUPER_ADMIN,UserRole.ADMIN,UserRole.MANAGER)
 StaffAdmin=role_permission(UserRole.SUPER_ADMIN,UserRole.ADMIN)
@@ -38,6 +84,19 @@ SearchAdmin=role_permission(
     UserRole.INVENTORY_MANAGER,UserRole.ORDER_MANAGER,UserRole.CUSTOMER_SUPPORT,
     UserRole.MARKETING_MANAGER,UserRole.FINANCE_MANAGER,
 )
+
+
+MarketingAdmin=role_permission(UserRole.SUPER_ADMIN,UserRole.ADMIN,UserRole.MANAGER,UserRole.MARKETING_MANAGER)
+
+class HeroSlideAdminViewSet(ModelViewSet):
+    permission_classes = [MarketingAdmin]
+    serializer_class = HeroSlideSerializer
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
+    queryset = HeroSlide.objects.all().order_by("order", "id")
+    search_fields = ("title", "subtitle", "eyebrow")
+    filterset_fields = ("active", "text_position", "theme")
+    ordering_fields = ("order", "created_at", "updated_at", "title")
+    http_method_names = ["get", "post", "patch", "delete", "head", "options"]
 
 class DemoImportView(APIView):
     permission_classes=[DemoAdmin]

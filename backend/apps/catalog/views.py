@@ -1,7 +1,12 @@
+import csv
+from io import TextIOWrapper
+from decimal import Decimal, InvalidOperation
+from django.utils.text import slugify
 from django.db import transaction
 from django.db.models import Q, Max
 from rest_framework.decorators import action
 from rest_framework.parsers import MultiPartParser,FormParser
+from openpyxl import load_workbook
 from rest_framework.permissions import AllowAny,IsAuthenticated
 from rest_framework.viewsets import ReadOnlyModelViewSet,ModelViewSet
 from rest_framework.views import APIView
@@ -43,6 +48,82 @@ class AdminProductViewSet(ModelViewSet):
     filterset_fields=("product_type","status","brand","category","featured","new_arrival","bestseller","trending"); search_fields=("name","sku","barcode","brand__name","category__name","variants__sku"); ordering_fields=("id","created_at","updated_at","base_price","name")
     @action(detail=True,methods=["post"])
     def publish(self,request,pk=None): return success(ProductAdminSerializer(publish_product(product=self.get_object())).data,"Product published.")
+    @action(detail=False,methods=["post"],url_path="import-file",parser_classes=[MultiPartParser,FormParser])
+    def import_file(self,request):
+        upload=request.FILES.get("file")
+        if not upload:
+            raise ValidationError({"file":"Upload a CSV or XLSX file."})
+        lower=upload.name.lower()
+        if not (lower.endswith(".csv") or lower.endswith(".xlsx")):
+            raise ValidationError({"file":"Only .csv and .xlsx files are supported."})
+
+        if lower.endswith(".csv"):
+            wrapper=TextIOWrapper(upload.file,encoding="utf-8-sig",newline="")
+            rows=list(csv.DictReader(wrapper))
+        else:
+            wb=load_workbook(upload,read_only=True,data_only=True)
+            ws=wb.active
+            values=list(ws.iter_rows(values_only=True))
+            if not values:
+                rows=[]
+            else:
+                headers=[str(x or "").strip() for x in values[0]]
+                rows=[dict(zip(headers,row)) for row in values[1:] if any(v not in (None,"") for v in row)]
+
+        def text(row,key):
+            value=row.get(key,"")
+            return "" if value is None else str(value).strip()
+        def flag(row,key): return text(row,key).lower() in {"1","true","yes","y","on"}
+        def decimal_value(row,key,required=False):
+            raw=text(row,key)
+            if not raw:
+                if required: raise ValueError(f"{key} is required")
+                return None
+            try: return Decimal(raw)
+            except InvalidOperation: raise ValueError(f"{key} must be a number")
+        def resolve_brand(value):
+            if not value: raise ValueError("brand is required")
+            qs=Brand.objects.filter(pk=int(value)) if value.isdigit() else Brand.objects.filter(Q(name__iexact=value)|Q(slug__iexact=slugify(value)))
+            obj=qs.first()
+            if not obj: raise ValueError(f"Brand '{value}' was not found")
+            return obj
+        def resolve_category(value):
+            if not value: raise ValueError("category is required")
+            qs=Category.objects.filter(pk=int(value)) if value.isdigit() else Category.objects.filter(Q(name__iexact=value)|Q(slug__iexact=slugify(value)))
+            obj=qs.first()
+            if not obj: raise ValueError(f"Category '{value}' was not found")
+            return obj
+
+        created=0; skipped=0; errors=[]
+        for index,row in enumerate(rows,start=2):
+            try:
+                name=text(row,"name")
+                ptype=(text(row,"product_type") or Product.ProductType.SIMPLE).lower()
+                sku=text(row,"sku") or None
+                if not name: raise ValueError("name is required")
+                if ptype not in {Product.ProductType.SIMPLE,Product.ProductType.VARIABLE}: raise ValueError("product_type must be simple or variable")
+                if ptype==Product.ProductType.SIMPLE and not sku: raise ValueError("sku is required for simple products")
+                if sku and Product.objects.filter(sku__iexact=sku).exists(): raise ValueError(f"SKU '{sku}' already exists")
+                base_slug=slugify(text(row,"slug") or name)[:220] or f"product-{index}"
+                slug=base_slug; counter=2
+                while Product.objects.filter(slug=slug).exists():
+                    slug=f"{base_slug[:210]}-{counter}"; counter+=1
+                status=(text(row,"status") or Product.Status.DRAFT).lower()
+                if status not in {Product.Status.DRAFT,Product.Status.ACTIVE,Product.Status.ARCHIVED}: raise ValueError("status must be draft, active or archived")
+                with transaction.atomic():
+                    product=Product.objects.create(
+                        name=name,slug=slug,product_type=ptype,sku=sku,barcode=text(row,"barcode") or None,
+                        brand=resolve_brand(text(row,"brand")),category=resolve_category(text(row,"category")),
+                        base_price=decimal_value(row,"base_price",required=True),compare_at_price=decimal_value(row,"compare_at_price"),cost_price=decimal_value(row,"cost_price"),
+                        status=status,short_description=text(row,"short_description"),description=text(row,"description"),
+                        weight=decimal_value(row,"weight"),tax_class=text(row,"tax_class"),featured=flag(row,"featured"),new_arrival=flag(row,"new_arrival"),bestseller=flag(row,"bestseller"),trending=flag(row,"trending"),
+                    )
+                    if product.status==Product.Status.ACTIVE and product.product_type==Product.ProductType.VARIABLE:
+                        product.status=Product.Status.DRAFT; product.save(update_fields=["status","updated_at"])
+                created+=1
+            except Exception as exc:
+                skipped+=1; errors.append({"row":index,"error":str(exc)})
+        return success({"created":created,"skipped":skipped,"errors":errors},"Product import complete.")
 class AdminVariantViewSet(ModelViewSet):
     permission_classes=[CatalogAdmin]; serializer_class=VariantAdminSerializer
     queryset=ProductVariant.objects.select_related("product").prefetch_related("attributes__attribute").order_by("-id"); filterset_fields=("product","is_active"); search_fields=("sku","barcode","product__name")

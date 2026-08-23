@@ -257,17 +257,92 @@ TRANSITIONS={
     Order.Status.RETURNED:{Order.Status.REFUNDED},
     Order.Status.CANCELLED:{Order.Status.REFUNDED},
 }
+
+# Main operational lifecycle used by the management dashboard status selector.
+# Staff may choose a later state directly; the service still applies every
+# intermediate transition so inventory/fulfilment side effects are preserved.
+ORDER_LIFECYCLE=(
+    Order.Status.PENDING,
+    Order.Status.CONFIRMED,
+    Order.Status.PROCESSING,
+    Order.Status.PACKED,
+    Order.Status.READY_TO_SHIP,
+    Order.Status.SHIPPED,
+    Order.Status.OUT_FOR_DELIVERY,
+    Order.Status.DELIVERED,
+)
+
+
+def _apply_order_status(*,order,new_status,actor=None):
+    if new_status==Order.Status.CANCELLED:
+        for item in order.items.all():
+            release_stock(reference_type="order_item",reference_id=item.id,created_by=actor)
+    elif new_status==Order.Status.DELIVERED:
+        for item in order.items.all():
+            consume_reserved_stock(reference_type="order_item",reference_id=item.id,created_by=actor)
+        order.fulfillment_status=Order.FulfillmentStatus.FULFILLED
+    elif new_status in {
+        Order.Status.PROCESSING,
+        Order.Status.PACKED,
+        Order.Status.READY_TO_SHIP,
+        Order.Status.SHIPPED,
+        Order.Status.OUT_FOR_DELIVERY,
+    }:
+        order.fulfillment_status=Order.FulfillmentStatus.PROCESSING
+    elif new_status==Order.Status.PARTIALLY_RETURNED:
+        order.fulfillment_status=Order.FulfillmentStatus.PARTIAL_RETURN
+    elif new_status==Order.Status.RETURNED:
+        order.fulfillment_status=Order.FulfillmentStatus.RETURNED
+    order.order_status=new_status
+
+
 @transaction.atomic
 def transition_order(*,order,new_status,actor=None):
+    """Strict one-step transition used by internal business workflows/tests."""
     order=Order.objects.select_for_update().prefetch_related("items").get(pk=order.pk)
-    if new_status==order.order_status:return order
-    if new_status not in TRANSITIONS.get(order.order_status,set()): raise ValidationError({"order_status":f"Invalid transition {order.order_status} → {new_status}."})
+    if new_status==order.order_status:
+        return order
+    if new_status not in TRANSITIONS.get(order.order_status,set()):
+        raise ValidationError({"order_status":f"Invalid transition {order.order_status} → {new_status}."})
+    _apply_order_status(order=order,new_status=new_status,actor=actor)
+    order.save(update_fields=["order_status","fulfillment_status","updated_at"])
+    return order
+
+
+@transaction.atomic
+def transition_order_to_status(*,order,new_status,actor=None):
+    """
+    Management transition that can move an order forward multiple lifecycle
+    steps while still executing every intermediate side effect atomically.
+
+    Example: confirmed -> delivered executes processing -> packed ->
+    ready_to_ship -> shipped -> out_for_delivery -> delivered internally.
+    """
+    order=Order.objects.select_for_update().prefetch_related("items").get(pk=order.pk)
+    if new_status==order.order_status:
+        return order
+
+    # Cancellation remains a direct controlled transition and is only allowed
+    # while the strict transition map permits it.
     if new_status==Order.Status.CANCELLED:
-        for item in order.items.all(): release_stock(reference_type="order_item",reference_id=item.id,created_by=actor)
-    elif new_status==Order.Status.DELIVERED:
-        for item in order.items.all(): consume_reserved_stock(reference_type="order_item",reference_id=item.id,created_by=actor)
-        order.fulfillment_status=Order.FulfillmentStatus.FULFILLED
-    elif new_status in {Order.Status.PROCESSING,Order.Status.PACKED,Order.Status.READY_TO_SHIP,Order.Status.SHIPPED,Order.Status.OUT_FOR_DELIVERY}: order.fulfillment_status=Order.FulfillmentStatus.PROCESSING
-    elif new_status==Order.Status.PARTIALLY_RETURNED: order.fulfillment_status=Order.FulfillmentStatus.PARTIAL_RETURN
-    elif new_status==Order.Status.RETURNED: order.fulfillment_status=Order.FulfillmentStatus.RETURNED
-    order.order_status=new_status; order.save(update_fields=["order_status","fulfillment_status","updated_at"]); return order
+        if new_status not in TRANSITIONS.get(order.order_status,set()):
+            raise ValidationError({"order_status":f"Invalid transition {order.order_status} → {new_status}."})
+        _apply_order_status(order=order,new_status=new_status,actor=actor)
+        order.save(update_fields=["order_status","fulfillment_status","updated_at"])
+        return order
+
+    if order.order_status not in ORDER_LIFECYCLE or new_status not in ORDER_LIFECYCLE:
+        raise ValidationError({"order_status":"This status must be changed through its dedicated return/refund workflow."})
+
+    current_index=ORDER_LIFECYCLE.index(order.order_status)
+    target_index=ORDER_LIFECYCLE.index(new_status)
+    if target_index<current_index:
+        raise ValidationError({"order_status":"Backward order status changes are not allowed."})
+
+    for step_status in ORDER_LIFECYCLE[current_index+1:target_index+1]:
+        if step_status not in TRANSITIONS.get(order.order_status,set()):
+            raise ValidationError({"order_status":f"Invalid transition {order.order_status} → {step_status}."})
+        _apply_order_status(order=order,new_status=step_status,actor=actor)
+
+    order.save(update_fields=["order_status","fulfillment_status","updated_at"])
+    return order

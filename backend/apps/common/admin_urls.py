@@ -1,9 +1,10 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
-from .views import CheckoutSettingsAdminView, DemoImportView, GlobalSearchView, StaffUserViewSet
+from .views import CheckoutSettingsAdminView, DemoImportView, GlobalSearchView, HeroSlideAdminViewSet, StaffUserViewSet
 
 router=DefaultRouter()
 router.register('staff-users',StaffUserViewSet,basename='admin-staff-users')
+router.register('hero-slides',HeroSlideAdminViewSet,basename='admin-hero-slides')
 
 urlpatterns=[
     path('',include(router.urls)),

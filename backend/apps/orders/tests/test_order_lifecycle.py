@@ -8,7 +8,7 @@ from apps.carts.services import add_cart_item
 from apps.common.tests.utils import delivery_location, simple_product
 from apps.inventory.models import ProductStock
 from apps.orders.models import Order
-from apps.orders.services import checkout, transition_order
+from apps.orders.services import checkout, transition_order, transition_order_to_status
 from apps.shipping.models import ShippingMethod
 
 
@@ -51,3 +51,28 @@ class OrderLifecycleTests(TestCase):
         order = self.place()
         with self.assertRaises(ValidationError):
             transition_order(order=order, new_status=Order.Status.DELIVERED)
+    def test_management_can_advance_confirmed_directly_to_shipped(self):
+        order = self.place()
+        order = transition_order(order=order, new_status=Order.Status.CONFIRMED)
+        order = transition_order_to_status(order=order, new_status=Order.Status.SHIPPED)
+        self.assertEqual(order.order_status, Order.Status.SHIPPED)
+        self.assertEqual(order.fulfillment_status, Order.FulfillmentStatus.PROCESSING)
+        stock = ProductStock.objects.get(stock_item=self.si, warehouse=self.wh)
+        self.assertEqual((stock.available_stock, stock.reserved_stock), (3, 2))
+
+    def test_management_can_advance_confirmed_directly_to_delivered(self):
+        order = self.place()
+        order = transition_order(order=order, new_status=Order.Status.CONFIRMED)
+        order = transition_order_to_status(order=order, new_status=Order.Status.DELIVERED)
+        self.assertEqual(order.order_status, Order.Status.DELIVERED)
+        self.assertEqual(order.fulfillment_status, Order.FulfillmentStatus.FULFILLED)
+        stock = ProductStock.objects.get(stock_item=self.si, warehouse=self.wh)
+        self.assertEqual((stock.available_stock, stock.reserved_stock), (3, 0))
+
+    def test_management_cannot_move_status_backward(self):
+        from rest_framework.exceptions import ValidationError
+        order = self.place()
+        order = transition_order_to_status(order=order, new_status=Order.Status.SHIPPED)
+        with self.assertRaises(ValidationError):
+            transition_order_to_status(order=order, new_status=Order.Status.CONFIRMED)
+

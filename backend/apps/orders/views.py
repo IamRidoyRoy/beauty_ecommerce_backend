@@ -13,7 +13,7 @@ from apps.carts.services import get_request_cart
 from apps.common.models import AnalyticsEvent
 from .models import Order
 from .serializers import CheckoutSerializer,OrderSerializer,AdminOrderSerializer,OrderTransitionSerializer,AdminCustomerListSerializer,AdminCustomerDetailSerializer
-from .services import checkout,transition_order
+from .services import checkout,transition_order_to_status
 class CheckoutView(APIView):
     permission_classes=[AllowAny]
     def post(self,request):
@@ -53,7 +53,7 @@ class AdminOrderViewSet(ReadOnlyModelViewSet):
         if new_status in {Order.Status.RETURN_REQUESTED,Order.Status.PARTIALLY_RETURNED,Order.Status.RETURNED,Order.Status.REFUNDED}:
             from rest_framework.exceptions import ValidationError
             raise ValidationError({"order_status":"Use the return/refund service endpoints for return and refund states."})
-        return success(AdminOrderSerializer(transition_order(order=self.get_object(),new_status=new_status,actor=request.user),context={"request":request}).data,"Order status updated.")
+        return success(AdminOrderSerializer(transition_order_to_status(order=self.get_object(),new_status=new_status,actor=request.user),context={"request":request}).data,"Order status updated.")
     @action(detail=True,methods=["get"])
     def invoice(self,request,order_number=None):
         order=self.get_object(); data={"company":{"name":"Beauty Commerce","address":"Configure company address","phone":"Configure company phone"},"invoice_number":f"INV-{order.order_number}","order":OrderSerializer(order,context={"request":request}).data,"customer":{"name":order.customer_name,"phone":order.customer_phone},"address":order.shipping_address_snapshot,"payment": [{"method":p.method,"status":p.status,"amount":str(p.amount),"transaction_id":p.transaction_id} for p in order.payments.all()],"shipment":[{"courier":x.courier,"tracking_code":x.tracking_code,"status":x.status} for x in order.shipments.all()]}

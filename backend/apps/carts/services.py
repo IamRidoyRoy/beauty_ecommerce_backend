@@ -6,19 +6,36 @@ from apps.catalog.models import Product,ProductVariant
 from apps.inventory.services import resolve_stock_item,get_sellable_stock
 
 def get_request_cart(request,create=True):
+    """Resolve the active cart for the current request.
+
+    Guest cart tokens are a convenience/session identifier, not
+    authentication.  Browser storage can legitimately outlive a guest cart
+    row (database reset, cart cleanup, expired/merged cart, etc.).  For any
+    operation that is allowed to create a cart, recover transparently by
+    creating a fresh guest cart instead of failing the storefront with
+    ``Cart not found``.
+    """
     if request.user.is_authenticated:
         cart=Cart.objects.filter(user=request.user,is_active=True).first()
         if cart or not create:return cart
         try:return Cart.objects.create(user=request.user)
         except IntegrityError:return Cart.objects.get(user=request.user,is_active=True)
+
     raw=request.headers.get("X-Cart-Token")
     if raw:
-        try: token=uuid.UUID(raw)
-        except ValueError: raise ValidationError({"X-Cart-Token":"Invalid cart token."})
+        try:
+            token=uuid.UUID(raw)
+        except (ValueError, TypeError, AttributeError):
+            return Cart.objects.create() if create else None
+
         cart=Cart.objects.filter(token=token,user__isnull=True,is_active=True).first()
         if cart:return cart
-        if not create:return None
-        raise ValidationError({"X-Cart-Token":"Cart not found."})
+
+        # A stale anonymous token must never block normal shopping.  The new
+        # token is returned by CartSerializer / add-to-cart and the frontend
+        # persists it for subsequent requests.
+        return Cart.objects.create() if create else None
+
     return Cart.objects.create() if create else None
 
 def validate_inventory_target(*,product=None,product_variant=None):

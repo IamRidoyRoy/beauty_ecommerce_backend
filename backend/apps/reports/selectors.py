@@ -57,8 +57,8 @@ def stock_aging(params):
     first_in=StockMovement.objects.filter(stock_item=OuterRef("stock_item"),warehouse=OuterRef("warehouse"),movement_type__in=[StockMovement.Type.PURCHASE,StockMovement.Type.RESTOCK],quantity__gt=0).order_by("created_at").values("created_at")[:1]
     return list(ProductStock.objects.filter(available_stock__gt=0).annotate(first_stocked_at=Subquery(first_in)).values("stock_item_id","warehouse__name","available_stock","first_stocked_at").order_by("first_stocked_at")[:500])
 def dead_stock(params):
-    days=int(params.get("days",90)); since=timezone.now()-timedelta(days=days)
-    recent_sale=OrderItem.objects.filter(Q(product_id=OuterRef("stock_item__product_id"))|Q(variant_id=OuterRef("stock_item__variant_id")),order__created_at__gte=since).exclude(order__order_status=Order.Status.CANCELLED)
+    start,end=_range(params)
+    recent_sale=OrderItem.objects.filter(Q(product_id=OuterRef("stock_item__product_id"))|Q(variant_id=OuterRef("stock_item__variant_id")),order__created_at__range=(start,end)).exclude(order__order_status=Order.Status.CANCELLED)
     return list(ProductStock.objects.filter(available_stock__gt=0).annotate(has_recent_sale=Exists(recent_sale)).filter(has_recent_sale=False).values("stock_item__product__id","stock_item__product__name","stock_item__variant__id","stock_item__variant__sku","stock_item__variant__product__name","available_stock","warehouse__name")[:500])
 def low_performing(params):
     start,end=_range(params); return list(Product.objects.filter(status=Product.Status.ACTIVE).annotate(units=Coalesce(Sum("order_items__quantity",filter=Q(order_items__order__created_at__range=(start,end))&~Q(order_items__order__order_status=Order.Status.CANCELLED)),0)).values("id","name","sku","units").order_by("units","name")[:100])
@@ -75,7 +75,8 @@ def refunds(params):
 def discounts(params):
     start,end=_range(params); return Order.objects.filter(created_at__range=(start,end)).aggregate(total_discount=Coalesce(Sum("discount"),Decimal("0")),orders_with_discount=Count("id",filter=Q(discount__gt=0)))
 def coupon_performance(params):
-    return list(Coupon.objects.annotate(orders=Count("usages"),revenue=Coalesce(Sum("usages__order__total"),Decimal("0")),discount=Coalesce(Sum("usages__order__discount"),Decimal("0"))).values("id","code","coupon_type","orders","revenue","discount","used_count").order_by("-orders"))
+    start,end=_range(params); period=Q(usages__order__created_at__range=(start,end))
+    return list(Coupon.objects.annotate(orders=Count("usages",filter=period),revenue=Coalesce(Sum("usages__order__total",filter=period),Decimal("0")),discount=Coalesce(Sum("usages__order__discount",filter=period),Decimal("0"))).values("id","code","coupon_type","orders","revenue","discount","used_count").order_by("-orders"))
 def sales_geography(params):
     start,end=_range(params); return list(Order.objects.filter(created_at__range=(start,end)).exclude(order_status=Order.Status.CANCELLED).values(district=models_json_key("shipping_address_snapshot","district")).annotate(orders=Count("id"),sales=Sum("total")).order_by("-sales"))
 def models_json_key(field,key):

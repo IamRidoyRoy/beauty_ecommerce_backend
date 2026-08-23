@@ -55,3 +55,42 @@ class CheckoutSettings(TimeStampedModel):
 
     def __str__(self):
         return "Checkout settings"
+
+
+class HeroSlide(TimeStampedModel):
+    class TextPosition(models.TextChoices):
+        LEFT = "left", "Left"
+        CENTER = "center", "Center"
+        RIGHT = "right", "Right"
+
+    class Theme(models.TextChoices):
+        LIGHT = "light", "Light text"
+        DARK = "dark", "Dark text"
+
+    eyebrow = models.CharField(max_length=120, blank=True)
+    title = models.CharField(max_length=180)
+    subtitle = models.TextField(blank=True)
+    image = models.ImageField(upload_to="hero_slides/")
+    mobile_image = models.ImageField(upload_to="hero_slides/mobile/", blank=True, null=True)
+    image_alt = models.CharField(max_length=180, blank=True)
+
+    primary_cta_label = models.CharField(max_length=80, blank=True)
+    primary_cta_url = models.CharField(max_length=255, blank=True)
+    secondary_cta_label = models.CharField(max_length=80, blank=True)
+    secondary_cta_url = models.CharField(max_length=255, blank=True)
+
+    text_position = models.CharField(max_length=12, choices=TextPosition.choices, default=TextPosition.LEFT)
+    theme = models.CharField(max_length=12, choices=Theme.choices, default=Theme.DARK)
+    overlay_opacity = models.PositiveSmallIntegerField(default=20, help_text="Background overlay opacity from 0 to 90 percent.")
+
+    active = models.BooleanField(default=True, db_index=True)
+    order = models.PositiveIntegerField(default=0, db_index=True)
+    starts_at = models.DateTimeField(blank=True, null=True, db_index=True)
+    ends_at = models.DateTimeField(blank=True, null=True, db_index=True)
+
+    class Meta:
+        ordering = ("order", "id")
+        indexes = [models.Index(fields=("active", "order"))]
+
+    def __str__(self):
+        return self.title

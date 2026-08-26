@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.db import OperationalError, ProgrammingError
 
 from apps.common.admin_utils import register_app_models
-from .models import CheckoutSettings, HeroSlide
+from .models import AnnouncementMessage, CheckoutSettings, HeroSlide
 
 
 @admin.register(CheckoutSettings)
@@ -29,4 +29,12 @@ class HeroSlideAdmin(admin.ModelAdmin):
     ordering = ("order", "id")
 
 
-register_app_models("common", exclude={CheckoutSettings, HeroSlide})
+@admin.register(AnnouncementMessage)
+class AnnouncementMessageAdmin(admin.ModelAdmin):
+    list_display = ("text", "icon", "active", "order", "updated_at")
+    list_filter = ("active", "icon")
+    search_fields = ("text", "link_url")
+    ordering = ("order", "id")
+
+
+register_app_models("common", exclude={CheckoutSettings, HeroSlide, AnnouncementMessage})

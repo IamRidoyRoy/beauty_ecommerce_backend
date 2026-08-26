@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.core.management import call_command
-from django.db.models import Q
+from django.db.models import Case, IntegerField, Q, Value, When
 from django.utils import timezone
 from rest_framework import serializers
 from rest_framework.exceptions import PermissionDenied, ValidationError
@@ -15,7 +15,7 @@ from apps.inventory.models import Purchase, Supplier
 from apps.orders.models import Order
 from apps.promotions.models import Coupon
 from apps.shipping.models import Shipment
-from .models import AnalyticsEvent, CheckoutSettings, HeroSlide
+from .models import AnalyticsEvent, AnnouncementMessage, CheckoutSettings, HeroSlide
 from .permissions import role_permission
 from .responses import success
 
@@ -31,6 +31,25 @@ class AnalyticsEventView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save(user=request.user if request.user.is_authenticated else None)
         return success(message='Event recorded.',status=201)
+
+
+
+
+class AnnouncementMessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AnnouncementMessage
+        fields = ("id", "text", "icon", "link_url", "active", "order", "created_at", "updated_at")
+        read_only_fields = ("id", "created_at", "updated_at")
+
+
+class AnnouncementMessageListView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        queryset = (AnnouncementMessage.objects.filter(active=True)
+            .annotate(_priority_bucket=Case(When(order__gt=0, then=Value(0)), default=Value(1), output_field=IntegerField()))
+            .order_by("_priority_bucket", "order", "id"))
+        return success(AnnouncementMessageSerializer(queryset, many=True).data)
 
 
 class HeroSlideSerializer(serializers.ModelSerializer):
@@ -87,6 +106,20 @@ SearchAdmin=role_permission(
 
 
 MarketingAdmin=role_permission(UserRole.SUPER_ADMIN,UserRole.ADMIN,UserRole.MANAGER,UserRole.MARKETING_MANAGER)
+
+
+
+class AnnouncementMessageAdminViewSet(ModelViewSet):
+    permission_classes = [MarketingAdmin]
+    serializer_class = AnnouncementMessageSerializer
+    queryset = (AnnouncementMessage.objects.all()
+        .annotate(_priority_bucket=Case(When(order__gt=0, then=Value(0)), default=Value(1), output_field=IntegerField()))
+        .order_by("_priority_bucket", "order", "id"))
+    search_fields = ("text", "link_url")
+    filterset_fields = ("active", "icon")
+    ordering_fields = ("order", "created_at", "updated_at")
+    http_method_names = ["get", "post", "patch", "delete", "head", "options"]
+
 
 class HeroSlideAdminViewSet(ModelViewSet):
     permission_classes = [MarketingAdmin]

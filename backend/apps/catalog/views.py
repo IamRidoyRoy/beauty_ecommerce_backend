@@ -4,7 +4,7 @@ from decimal import Decimal, InvalidOperation
 from django.utils.text import slugify
 from django.db.models.functions import Coalesce
 from django.db import transaction
-from django.db.models import Q, Max, Sum, Value, IntegerField
+from django.db.models import Q, Max, Sum, Value, IntegerField, Case, When
 from rest_framework.decorators import action
 from rest_framework.parsers import MultiPartParser,FormParser
 from openpyxl import load_workbook
@@ -30,7 +30,23 @@ class ProductViewSet(ReadOnlyModelViewSet):
     @action(detail=False,methods=["get"],url_path="search")
     def search(self,request): return self.list(request)
 class CategoryViewSet(ReadOnlyModelViewSet):
-    permission_classes=[AllowAny]; serializer_class=CategorySerializer; queryset=Category.objects.filter(active=True).select_related("parent")
+    permission_classes=[AllowAny]
+    serializer_class=CategorySerializer
+    # Navigation needs the complete taxonomy; paginating categories can split a
+    # parent from its children and make the storefront hierarchy incomplete.
+    pagination_class=None
+    queryset=(
+        Category.objects.filter(active=True)
+        .select_related("parent")
+        .annotate(
+            _priority_bucket=Case(
+                When(order__gt=0, then=Value(0)),
+                default=Value(1),
+                output_field=IntegerField(),
+            )
+        )
+        .order_by("_priority_bucket", "order", "-updated_at", "name", "id")
+    )
 class BrandViewSet(ReadOnlyModelViewSet):
     permission_classes=[AllowAny]; serializer_class=BrandSerializer; queryset=Brand.objects.filter(active=True)
 
@@ -145,7 +161,88 @@ class AdminVariantViewSet(ModelViewSet):
         .prefetch_related("attributes__attribute")
         .annotate(admin_available_stock=Coalesce(Sum("stock_item__stocks__available_stock"),Value(0),output_field=IntegerField()))
         .order_by("-id")); filterset_fields=("product","is_active"); search_fields=("sku","barcode","product__name")
-class AdminCategoryViewSet(ModelViewSet): permission_classes=[CatalogAdmin]; serializer_class=CategorySerializer; queryset=Category.objects.select_related("parent").all(); search_fields=("name","slug","description"); filterset_fields=("active","parent"); ordering_fields=("name","order","created_at")
+def _resequence_category_siblings(*, parent_id, moving=None, desired_order=0):
+    """Keep positive category priorities unique/contiguous within one parent.
+
+    order=0 is intentionally unprioritized. A positive desired order is an
+    insertion position (1-based), so assigning Skincare=1 always makes it the
+    first sibling and shifts any category that previously occupied that slot.
+    """
+    siblings=list(
+        Category.objects.select_for_update()
+        .filter(parent_id=parent_id, order__gt=0)
+        .exclude(pk=getattr(moving, "pk", None))
+        .order_by("order", "name", "id")
+    )
+
+    sequence=siblings
+    if moving is not None and int(desired_order or 0) > 0:
+        position=max(0, min(int(desired_order)-1, len(siblings)))
+        sequence=siblings[:position]+[moving]+siblings[position:]
+
+    changed=[]
+    for index, category in enumerate(sequence, start=1):
+        if category.order != index:
+            category.order=index
+            changed.append(category)
+    if changed:
+        Category.objects.bulk_update(changed, ["order", "updated_at"])
+
+
+class AdminCategoryViewSet(ModelViewSet):
+    permission_classes=[CatalogAdmin]
+    serializer_class=CategorySerializer
+    search_fields=("name","slug","description")
+    filterset_fields=("active","parent")
+    ordering_fields=("name","order","created_at")
+    queryset=(
+        Category.objects.select_related("parent")
+        .annotate(
+            _priority_bucket=Case(
+                When(order__gt=0,then=Value(0)),
+                default=Value(1),
+                output_field=IntegerField(),
+            )
+        )
+        .order_by("_priority_bucket","order","-updated_at","name","id")
+    )
+
+    @transaction.atomic
+    def perform_create(self, serializer):
+        desired_order=max(0, int(serializer.validated_data.get("order", 0) or 0))
+        parent=serializer.validated_data.get("parent")
+        # Save as unprioritized first, then insert at the requested sibling slot.
+        instance=serializer.save(order=0)
+        if desired_order > 0:
+            _resequence_category_siblings(
+                parent_id=parent.pk if parent else None,
+                moving=instance,
+                desired_order=desired_order,
+            )
+            instance.refresh_from_db(fields=["order","updated_at"])
+
+    @transaction.atomic
+    def perform_update(self, serializer):
+        current=serializer.instance
+        old_parent_id=current.parent_id
+        desired_order=max(0, int(serializer.validated_data.get("order", current.order) or 0))
+        new_parent=serializer.validated_data.get("parent", current.parent)
+        new_parent_id=new_parent.pk if new_parent else None
+
+        # Remove the moving category from the priority sequence first. This also
+        # makes parent changes deterministic and lets the old sibling group close
+        # any gap left behind.
+        instance=serializer.save(order=0)
+        _resequence_category_siblings(parent_id=old_parent_id)
+
+        if desired_order > 0:
+            _resequence_category_siblings(
+                parent_id=new_parent_id,
+                moving=instance,
+                desired_order=desired_order,
+            )
+            instance.refresh_from_db(fields=["order","updated_at"])
+
 class AdminBrandViewSet(ModelViewSet): permission_classes=[CatalogAdmin]; serializer_class=BrandSerializer; queryset=Brand.objects.all(); search_fields=("name","slug","country"); filterset_fields=("active","featured","country"); ordering_fields=("name","created_at")
 class AdminImageViewSet(ModelViewSet):
     permission_classes=[CatalogAdmin]; serializer_class=ProductImageSerializer; parser_classes=[MultiPartParser,FormParser]; queryset=ProductImage.objects.select_related("product","variant").all(); filterset_fields=("product","variant","image_type","is_primary"); search_fields=("alt_text","product__name","variant__sku")

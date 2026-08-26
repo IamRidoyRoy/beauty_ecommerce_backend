@@ -94,3 +94,23 @@ class HeroSlide(TimeStampedModel):
 
     def __str__(self):
         return self.title
+
+
+class AnnouncementMessage(TimeStampedModel):
+    """Storefront top announcement/ticker message managed from the dashboard."""
+    text = models.CharField(max_length=240)
+    icon = models.CharField(
+        max_length=32,
+        blank=True,
+        help_text="Optional icon key: gift, truck, sparkles, badge, tag, shield.",
+    )
+    link_url = models.CharField(max_length=255, blank=True)
+    active = models.BooleanField(default=True, db_index=True)
+    order = models.PositiveIntegerField(default=0, db_index=True)
+
+    class Meta:
+        ordering = ("order", "id")
+        indexes = [models.Index(fields=("active", "order"))]
+
+    def __str__(self):
+        return self.text

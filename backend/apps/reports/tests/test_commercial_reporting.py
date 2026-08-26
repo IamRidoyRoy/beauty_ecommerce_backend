@@ -75,3 +75,30 @@ class CommercialReportingRuleTests(TestCase):
         self.assertEqual(dashboard({})["revenue"], Decimal("0"))
         self.assertEqual(sum(row["orders"] for row in sales({})), 0)
         self.assertEqual(profit({})["orders"], 0)
+
+    def test_date_only_report_range_uses_dhaka_calendar_day(self):
+        from datetime import datetime, time
+        from django.utils import timezone
+        from apps.reports.selectors import _range
+
+        start, end = _range({"start": "2026-08-26", "end": "2026-08-26"})
+        local_start = timezone.localtime(start)
+        local_end = timezone.localtime(end)
+
+        self.assertEqual(local_start.date().isoformat(), "2026-08-26")
+        self.assertEqual(local_start.time(), time.min)
+        self.assertEqual(local_end.date().isoformat(), "2026-08-26")
+        self.assertEqual(local_end.hour, 23)
+        self.assertEqual(local_end.minute, 59)
+
+    def test_today_sales_includes_pending_order_created_in_dhaka_day(self):
+        from datetime import datetime
+        from django.utils import timezone
+
+        order = self.place()
+        local_created = timezone.make_aware(datetime(2026, 8, 26, 16, 0, 0), timezone.get_current_timezone())
+        Order.objects.filter(pk=order.pk).update(created_at=local_created)
+
+        rows = sales({"start": "2026-08-26", "end": "2026-08-26"})
+        self.assertEqual(sum(row["orders"] for row in rows), 1)
+        self.assertEqual(sum(row["sales"] for row in rows), order.total)

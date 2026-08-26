@@ -25,21 +25,59 @@ NON_REVENUE_ORDER_STATUSES=(
     Order.Status.REFUNDED,
 )
 
+def _local_boundary(value, *, end_of_day=False):
+    """Parse dashboard/report boundaries in the configured business timezone.
+
+    The dashboard sends YYYY-MM-DD for calendar presets. Treat those as
+    Asia/Dhaka (settings.TIME_ZONE) calendar days, not UTC dates. Datetime
+    values are still accepted for API clients that need exact boundaries.
+    """
+    if value in (None, ""):
+        return None
+
+    text = str(value).strip()
+    current_tz = timezone.get_current_timezone()
+
+    # Date-only values are intentionally interpreted as local business days.
+    d = parse_date(text) if "T" not in text and " " not in text else None
+    if d is not None:
+        boundary = datetime.combine(d, time.max if end_of_day else time.min)
+        return timezone.make_aware(boundary, current_tz)
+
+    parsed = parse_datetime(text)
+    if parsed is None:
+        d = parse_date(text)
+        if d is None:
+            return None
+        boundary = datetime.combine(d, time.max if end_of_day else time.min)
+        return timezone.make_aware(boundary, current_tz)
+
+    if timezone.is_naive(parsed):
+        parsed = timezone.make_aware(parsed, current_tz)
+    return parsed
+
+
 def _range(params):
-    end=timezone.now(); start=None
-    raw_start=params.get("start") or params.get("date_from"); raw_end=params.get("end") or params.get("date_to")
-    if raw_start:
-        parsed=parse_datetime(str(raw_start))
-        if parsed is None:
-            d=parse_date(str(raw_start)); parsed=timezone.make_aware(datetime.combine(d,time.min)) if d else None
-        start=parsed
-    if raw_end:
-        parsed=parse_datetime(str(raw_end))
-        if parsed is None:
-            d=parse_date(str(raw_end)); parsed=timezone.make_aware(datetime.combine(d,time.max)) if d else None
-        if parsed: end=parsed
-    if start is None: start=end-timedelta(days=int(params.get("days",30) or 30))
-    return start,end
+    raw_start = params.get("start") or params.get("date_from")
+    raw_end = params.get("end") or params.get("date_to")
+
+    start = _local_boundary(raw_start, end_of_day=False)
+    end = _local_boundary(raw_end, end_of_day=True)
+
+    now = timezone.now()
+    local_now = timezone.localtime(now)
+    current_tz = timezone.get_current_timezone()
+
+    if end is None:
+        end = now
+
+    if start is None:
+        days = max(int(params.get("days", 30) or 30), 1)
+        # "days=1" means today's local calendar day, not rolling 24 hours.
+        start_date = local_now.date() - timedelta(days=days - 1)
+        start = timezone.make_aware(datetime.combine(start_date, time.min), current_tz)
+
+    return start, end
 
 def _commercial_orders(start,end):
     return Order.objects.filter(created_at__range=(start,end)).exclude(order_status__in=NON_REVENUE_ORDER_STATUSES)
@@ -81,7 +119,7 @@ def dashboard(params):
 
 def sales(params):
     start,end=_range(params)
-    return list(_commercial_orders(start,end).annotate(day=TruncDate("created_at")).values("day").annotate(
+    return list(_commercial_orders(start,end).annotate(day=TruncDate("created_at", tzinfo=timezone.get_current_timezone())).values("day").annotate(
         orders=Count("id"),
         sales=Coalesce(Sum("total"),Decimal("0")),
         subtotal=Coalesce(Sum("subtotal"),Decimal("0")),

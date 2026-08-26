@@ -4,6 +4,7 @@ import uuid
 from django.conf import settings
 from django.db import IntegrityError, transaction
 from django.db.models import F
+from django.utils import timezone
 from rest_framework.exceptions import ValidationError
 
 from apps.accounts.models import Address, User
@@ -376,6 +377,17 @@ def _apply_order_status(*,order,new_status,actor=None):
         for item in order.items.all():
             consume_reserved_stock(reference_type="order_item",reference_id=item.id,created_by=actor)
         order.fulfillment_status=Order.FulfillmentStatus.FULFILLED
+
+        # Business rule: a delivered order is considered collected/paid.
+        # Keep the order summary and its pending/authorized payment record in sync.
+        order.payment_status=Order.PaymentStatus.PAID
+        from apps.payments.models import Payment
+        paid_at=timezone.now()
+        order.payments.filter(status__in=[Payment.Status.PENDING,Payment.Status.AUTHORIZED]).update(
+            status=Payment.Status.PAID,
+            paid_at=paid_at,
+            updated_at=paid_at,
+        )
     elif new_status in {
         Order.Status.PROCESSING,
         Order.Status.PACKED,
@@ -400,7 +412,7 @@ def transition_order(*,order,new_status,actor=None):
     if new_status not in TRANSITIONS.get(order.order_status,set()):
         raise ValidationError({"order_status":f"Invalid transition {order.order_status} → {new_status}."})
     _apply_order_status(order=order,new_status=new_status,actor=actor)
-    order.save(update_fields=["order_status","fulfillment_status","updated_at"])
+    order.save(update_fields=["order_status","payment_status","fulfillment_status","updated_at"])
     return order
 
 
@@ -423,7 +435,7 @@ def transition_order_to_status(*,order,new_status,actor=None):
         if new_status not in TRANSITIONS.get(order.order_status,set()):
             raise ValidationError({"order_status":f"Invalid transition {order.order_status} → {new_status}."})
         _apply_order_status(order=order,new_status=new_status,actor=actor)
-        order.save(update_fields=["order_status","fulfillment_status","updated_at"])
+        order.save(update_fields=["order_status","payment_status","fulfillment_status","updated_at"])
         return order
 
     if order.order_status not in ORDER_LIFECYCLE or new_status not in ORDER_LIFECYCLE:
@@ -439,5 +451,5 @@ def transition_order_to_status(*,order,new_status,actor=None):
             raise ValidationError({"order_status":f"Invalid transition {order.order_status} → {step_status}."})
         _apply_order_status(order=order,new_status=step_status,actor=actor)
 
-    order.save(update_fields=["order_status","fulfillment_status","updated_at"])
+    order.save(update_fields=["order_status","payment_status","fulfillment_status","updated_at"])
     return order

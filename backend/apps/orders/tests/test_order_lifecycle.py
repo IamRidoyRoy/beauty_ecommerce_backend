@@ -9,6 +9,7 @@ from apps.common.tests.utils import delivery_location, simple_product
 from apps.inventory.models import ProductStock
 from apps.orders.models import Order
 from apps.orders.services import checkout, transition_order, transition_order_to_status
+from apps.payments.models import Payment
 from apps.shipping.models import ShippingMethod
 
 
@@ -66,6 +67,10 @@ class OrderLifecycleTests(TestCase):
         order = transition_order_to_status(order=order, new_status=Order.Status.DELIVERED)
         self.assertEqual(order.order_status, Order.Status.DELIVERED)
         self.assertEqual(order.fulfillment_status, Order.FulfillmentStatus.FULFILLED)
+        self.assertEqual(order.payment_status, Order.PaymentStatus.PAID)
+        payment = Payment.objects.get(order=order)
+        self.assertEqual(payment.status, Payment.Status.PAID)
+        self.assertIsNotNone(payment.paid_at)
         stock = ProductStock.objects.get(stock_item=self.si, warehouse=self.wh)
         self.assertEqual((stock.available_stock, stock.reserved_stock), (3, 0))
 

@@ -2,8 +2,9 @@ import csv
 from io import TextIOWrapper
 from decimal import Decimal, InvalidOperation
 from django.utils.text import slugify
+from django.db.models.functions import Coalesce
 from django.db import transaction
-from django.db.models import Q, Max
+from django.db.models import Q, Max, Sum, Value, IntegerField
 from rest_framework.decorators import action
 from rest_framework.parsers import MultiPartParser,FormParser
 from openpyxl import load_workbook
@@ -21,6 +22,7 @@ from .filters import ProductFilter
 from .services import publish_product,set_primary_image,reorder_images
 
 CatalogAdmin=role_permission(UserRole.SUPER_ADMIN,UserRole.ADMIN,UserRole.MANAGER,UserRole.PRODUCT_MANAGER)
+CatalogOrderRead=role_permission(UserRole.SUPER_ADMIN,UserRole.ADMIN,UserRole.MANAGER,UserRole.PRODUCT_MANAGER,UserRole.ORDER_MANAGER)
 class ProductViewSet(ReadOnlyModelViewSet):
     permission_classes=[AllowAny]; lookup_field="slug"; filterset_class=ProductFilter; search_fields=("name","sku","brand__name","category__name"); ordering_fields=("created_at","base_price","name")
     def get_queryset(self): return product_detail_queryset() if self.action=="retrieve" else product_list_queryset()
@@ -44,7 +46,17 @@ class WishlistView(APIView):
 
 class AdminProductViewSet(ModelViewSet):
     permission_classes=[CatalogAdmin]; serializer_class=ProductAdminSerializer
-    queryset=Product.objects.all().select_related("brand","category").prefetch_related("variants","images").order_by("-id")
+    def get_permissions(self):
+        classes=[CatalogOrderRead] if self.request.method in {"GET","HEAD","OPTIONS"} else [CatalogAdmin]
+        return [permission() for permission in classes]
+    queryset=(Product.objects.all()
+        .select_related("brand","category")
+        .prefetch_related("variants","images")
+        .annotate(
+            simple_available_stock=Coalesce(Sum("stock_item__stocks__available_stock"),Value(0),output_field=IntegerField()),
+            variant_available_stock=Coalesce(Sum("variants__stock_item__stocks__available_stock"),Value(0),output_field=IntegerField()),
+        )
+        .order_by("-id"))
     filterset_fields=("product_type","status","brand","category","featured","new_arrival","bestseller","trending"); search_fields=("name","sku","barcode","brand__name","category__name","variants__sku"); ordering_fields=("id","created_at","updated_at","base_price","name")
     @action(detail=True,methods=["post"])
     def publish(self,request,pk=None): return success(ProductAdminSerializer(publish_product(product=self.get_object())).data,"Product published.")
@@ -126,7 +138,13 @@ class AdminProductViewSet(ModelViewSet):
         return success({"created":created,"skipped":skipped,"errors":errors},"Product import complete.")
 class AdminVariantViewSet(ModelViewSet):
     permission_classes=[CatalogAdmin]; serializer_class=VariantAdminSerializer
-    queryset=ProductVariant.objects.select_related("product").prefetch_related("attributes__attribute").order_by("-id"); filterset_fields=("product","is_active"); search_fields=("sku","barcode","product__name")
+    def get_permissions(self):
+        classes=[CatalogOrderRead] if self.request.method in {"GET","HEAD","OPTIONS"} else [CatalogAdmin]
+        return [permission() for permission in classes]
+    queryset=(ProductVariant.objects.select_related("product")
+        .prefetch_related("attributes__attribute")
+        .annotate(admin_available_stock=Coalesce(Sum("stock_item__stocks__available_stock"),Value(0),output_field=IntegerField()))
+        .order_by("-id")); filterset_fields=("product","is_active"); search_fields=("sku","barcode","product__name")
 class AdminCategoryViewSet(ModelViewSet): permission_classes=[CatalogAdmin]; serializer_class=CategorySerializer; queryset=Category.objects.select_related("parent").all(); search_fields=("name","slug","description"); filterset_fields=("active","parent"); ordering_fields=("name","order","created_at")
 class AdminBrandViewSet(ModelViewSet): permission_classes=[CatalogAdmin]; serializer_class=BrandSerializer; queryset=Brand.objects.all(); search_fields=("name","slug","country"); filterset_fields=("active","featured","country"); ordering_fields=("name","created_at")
 class AdminImageViewSet(ModelViewSet):

@@ -12,8 +12,8 @@ from apps.common.responses import success
 from apps.carts.services import get_request_cart
 from apps.common.models import AnalyticsEvent
 from .models import Order
-from .serializers import CheckoutSerializer,OrderSerializer,AdminOrderSerializer,OrderTransitionSerializer,AdminCustomerListSerializer,AdminCustomerDetailSerializer
-from .services import checkout,transition_order_to_status
+from .serializers import CheckoutSerializer,OrderSerializer,AdminOrderSerializer,OrderTransitionSerializer,AdminOrderCreateSerializer,AdminOrderCouponPreviewSerializer,AdminCustomerListSerializer,AdminCustomerDetailSerializer
+from .services import checkout,transition_order_to_status,create_admin_order,preview_admin_order_coupon
 class CheckoutView(APIView):
     permission_classes=[AllowAny]
     def post(self,request):
@@ -36,7 +36,7 @@ OrderWriteAdmin=role_permission(UserRole.SUPER_ADMIN,UserRole.ADMIN,UserRole.MAN
 class AdminOrderViewSet(ReadOnlyModelViewSet):
     permission_classes=[OrderReadAdmin]; serializer_class=AdminOrderSerializer; lookup_field="order_number"
     def get_permissions(self):
-        classes=[OrderWriteAdmin] if self.action=="transition" else [OrderReadAdmin]
+        classes=[OrderWriteAdmin] if self.action in {"transition","create_order","validate_coupon"} else [OrderReadAdmin]
         return [permission() for permission in classes]
     queryset=Order.objects.select_related("user","shipping_method").prefetch_related("items__product","items__variant","payments","shipments").order_by("-created_at")
     filterset_fields=("order_status","payment_status","fulfillment_status","shipping_method"); search_fields=("order_number","customer_name","customer_phone","items__sku_snapshot","shipments__tracking_code","shipments__courier"); ordering_fields=("created_at","total")
@@ -47,6 +47,43 @@ class AdminOrderViewSet(ReadOnlyModelViewSet):
         courier=self.request.query_params.get("courier")
         if courier: qs=qs.filter(shipments__courier__iexact=courier)
         return qs.distinct()
+
+    @action(detail=False,methods=["post"],url_path="validate-coupon")
+    def validate_coupon(self,request):
+        s=AdminOrderCouponPreviewSerializer(data=request.data)
+        s.is_valid(raise_exception=True)
+        v=s.validated_data
+        data=preview_admin_order_coupon(
+            items=v["items"],
+            code=v["code"],
+            phone=v.get("phone", ""),
+        )
+        return success(data,"Coupon applied successfully.")
+
+    @action(detail=False,methods=["post"],url_path="create-order")
+    def create_order(self,request):
+        s=AdminOrderCreateSerializer(data=request.data)
+        s.is_valid(raise_exception=True)
+        v=s.validated_data
+        customer={k:v[k] for k in ("name","phone","district","thana","address")}
+        customer["label"]=v.get("label","")
+        result=create_admin_order(
+            items=v["items"],
+            customer_data=customer,
+            shipping_method=v.get("shipping_method"),
+            payment_method=v["payment_method"],
+            coupon_code=v.get("coupon_code","").strip(),
+            order_note=v.get("order_note",""),
+            actor=request.user,
+        )
+        data={
+            "order":AdminOrderSerializer(result["order"],context={"request":request}).data,
+            "account_created":result.get("account_created",False),
+            "existing_account":result.get("existing_account",False),
+            "delivery":result.get("delivery",{}),
+        }
+        return success(data,"Order created successfully.",201)
+
     @action(detail=True,methods=["post"])
     def transition(self,request,order_number=None):
         s=OrderTransitionSerializer(data=request.data); s.is_valid(raise_exception=True); new_status=s.validated_data["new_status"]
@@ -58,7 +95,7 @@ class AdminOrderViewSet(ReadOnlyModelViewSet):
     def invoice(self,request,order_number=None):
         order=self.get_object(); data={"company":{"name":"Beauty Commerce","address":"Configure company address","phone":"Configure company phone"},"invoice_number":f"INV-{order.order_number}","order":OrderSerializer(order,context={"request":request}).data,"customer":{"name":order.customer_name,"phone":order.customer_phone},"address":order.shipping_address_snapshot,"payment": [{"method":p.method,"status":p.status,"amount":str(p.amount),"transaction_id":p.transaction_id} for p in order.payments.all()],"shipment":[{"courier":x.courier,"tracking_code":x.tracking_code,"status":x.status} for x in order.shipments.all()]}
         return success(data)
-CustomerAdmin=role_permission(UserRole.SUPER_ADMIN,UserRole.ADMIN,UserRole.MANAGER,UserRole.CUSTOMER_SUPPORT)
+CustomerAdmin=role_permission(UserRole.SUPER_ADMIN,UserRole.ADMIN,UserRole.MANAGER,UserRole.ORDER_MANAGER,UserRole.CUSTOMER_SUPPORT)
 class AdminCustomerViewSet(ReadOnlyModelViewSet):
     permission_classes=[CustomerAdmin]
     search_fields=("full_name","phone","email")

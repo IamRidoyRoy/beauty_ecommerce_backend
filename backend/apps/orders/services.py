@@ -10,6 +10,7 @@ from apps.accounts.models import Address, User
 from apps.accounts.serializers import jwt_for_user
 from apps.accounts.utils import PhoneFormatError, normalize_phone
 from apps.carts.models import Cart, CartItem
+from apps.carts.services import add_cart_item
 from apps.common.models import CheckoutSettings
 from apps.catalog.models import ProductImage
 from apps.delivery.services import resolve_delivery_quote
@@ -36,9 +37,9 @@ def _image_snapshot(product, variant=None):
     if variant:
         image = q.filter(variant=variant, is_primary=True).first() or q.filter(variant=variant).order_by("order").first()
         if image:
-            return image.image.name
+            return image.image.url
     image = q.filter(variant__isnull=True, is_primary=True).first() or q.filter(variant__isnull=True).order_by("order").first()
-    return image.image.name if image else ""
+    return image.image.url if image else ""
 
 
 def _prevalidate_stock(items):
@@ -68,7 +69,7 @@ def _address_payload(data, quote):
 
 
 @transaction.atomic
-def checkout(*, cart, customer_data, shipping_method, payment_method, coupon_code="", request_user=None, order_note=""):
+def checkout(*, cart, customer_data, shipping_method, payment_method, coupon_code="", request_user=None, order_note="", actor=None):
     cart = Cart.objects.select_for_update().get(pk=cart.pk, is_active=True)
     items = list(
         CartItem.objects.select_for_update()
@@ -161,6 +162,16 @@ def checkout(*, cart, customer_data, shipping_method, payment_method, coupon_cod
     tax = Decimal("0.00")
     total = max(Decimal("0"), subtotal - discount + shipping_charge + tax)
 
+    discount_snapshot = list(promo["applied"])
+    if coupon_result:
+        discount_snapshot.append({
+            "type": "coupon",
+            "code": coupon_result["coupon"].code,
+            "name": f"Coupon {coupon_result['coupon'].code}",
+            "discount": str(coupon_discount),
+            "free_shipping": bool(free_shipping),
+        })
+
     order = Order.objects.create(
         order_number=_order_number(),
         user=user,
@@ -169,7 +180,7 @@ def checkout(*, cart, customer_data, shipping_method, payment_method, coupon_cod
         shipping_address_snapshot=address_snapshot,
         shipping_method=shipping_method,
         coupon_code_snapshot=coupon_result["coupon"].code if coupon_result else "",
-        promotion_snapshot=promo["applied"],
+        promotion_snapshot=discount_snapshot,
         subtotal=subtotal,
         discount=discount,
         shipping_charge=shipping_charge,
@@ -201,7 +212,7 @@ def checkout(*, cart, customer_data, shipping_method, payment_method, coupon_cod
             quantity=cart_item.quantity,
             reference_type="order_item",
             reference_id=order_item.id,
-            created_by=user if user.is_staff else None,
+            created_by=actor or (user if user.is_staff else None),
         )
 
     payment = create_payment(order=order, method=payment_method, amount=total)
@@ -242,6 +253,90 @@ def checkout(*, cart, customer_data, shipping_method, payment_method, coupon_cod
             result["auth"] = jwt_for_user(user)
             result["verification_bypassed"] = True
     return result
+
+
+
+@transaction.atomic
+def preview_admin_order_coupon(*, items, code, phone=""):
+    """Validate an admin-entered coupon against the exact draft order items.
+
+    This creates a short-lived isolated cart so the same coupon and automatic
+    promotion services used at checkout remain the single source of truth.
+    Nothing is reserved, no usage is consumed, and the cart is always deleted.
+    """
+    cart = Cart.objects.create()
+    try:
+        for row in items:
+            product = row["product"]
+            variant = row.get("product_variant")
+            add_cart_item(
+                cart=cart,
+                product=product if product.product_type == product.ProductType.SIMPLE else None,
+                product_variant=variant if product.product_type == product.ProductType.VARIABLE else None,
+                quantity=row["quantity"],
+            )
+
+        user = None
+        if phone:
+            try:
+                normalized_phone = normalize_phone(phone)
+            except PhoneFormatError as exc:
+                raise ValidationError({"phone": str(exc)})
+            user = User.objects.filter(phone=normalized_phone).first()
+
+        subtotal = sum((item.line_total for item in cart.items.select_related("product", "product_variant__product")), Decimal("0"))
+        promo = calculate_promotions(cart=cart, user=user)
+        coupon_result = validate_coupon(code=code.strip(), cart=cart, user=user)
+        coupon_discount = coupon_result["discount"]
+        promotion_discount = promo["discount"]
+        total_discount = min(subtotal, coupon_discount + promotion_discount)
+
+        coupon = coupon_result["coupon"]
+        return {
+            "code": coupon.code,
+            "coupon_type": coupon.coupon_type,
+            "coupon_value": str(coupon.value),
+            "subtotal": str(subtotal),
+            "eligible_subtotal": str(coupon_result["eligible_subtotal"]),
+            "coupon_discount": str(coupon_discount),
+            "promotion_discount": str(promotion_discount),
+            "total_discount": str(total_discount),
+            "estimated_product_total": str(max(Decimal("0"), subtotal - total_discount)),
+            "free_shipping": coupon_result["free_shipping"],
+            "automatic_promotions": promo["applied"],
+        }
+    finally:
+        Cart.objects.filter(pk=cart.pk).delete()
+
+@transaction.atomic
+def create_admin_order(*, items, customer_data, shipping_method, payment_method, coupon_code="", order_note="", actor=None):
+    """Create an order from the management dashboard without touching a customer's active cart.
+
+    The dashboard supplies the same native inventory targets used by storefront carts.
+    A short-lived isolated cart is created only so the existing checkout service remains
+    the single source of truth for stock validation/reservation, promotions, delivery
+    pricing, snapshots, payments, and account creation/attachment.
+    """
+    cart = Cart.objects.create()
+    for row in items:
+        product = row["product"]
+        variant = row.get("product_variant")
+        add_cart_item(
+            cart=cart,
+            product=product if product.product_type == product.ProductType.SIMPLE else None,
+            product_variant=variant if product.product_type == product.ProductType.VARIABLE else None,
+            quantity=row["quantity"],
+        )
+    return checkout(
+        cart=cart,
+        customer_data=customer_data,
+        shipping_method=shipping_method,
+        payment_method=payment_method,
+        coupon_code=coupon_code,
+        request_user=None,
+        order_note=order_note,
+        actor=actor,
+    )
 
 TRANSITIONS={
     Order.Status.PENDING:{Order.Status.CONFIRMED,Order.Status.CANCELLED},

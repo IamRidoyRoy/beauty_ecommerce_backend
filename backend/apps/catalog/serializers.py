@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.db.models import Sum
 from .models import *
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -79,6 +80,29 @@ class ProductAdminSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(many=True, read_only=True)
 
     class Meta: model=Product; fields="__all__"; read_only_fields=("uuid","published_at")
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        if instance.product_type == Product.ProductType.SIMPLE:
+            available = getattr(instance, "simple_available_stock", None)
+            if available is None:
+                try:
+                    available = instance.stock_item.stocks.aggregate(total=Sum("available_stock"))["total"] or 0
+                except Exception:
+                    available = 0
+        else:
+            available = getattr(instance, "variant_available_stock", None)
+            if available is None:
+                available = sum(
+                    (getattr(v, "stock_item", None).stocks.aggregate(total=Sum("available_stock"))["total"] or 0)
+                    for v in instance.variants.all()
+                    if hasattr(v, "stock_item")
+                )
+        data["available_stock"] = int(available or 0)
+        images = list(instance.images.all())
+        image = next((row for row in images if row.is_primary and row.variant_id is None), None) or next((row for row in images if row.variant_id is None), None)
+        data["primary_image"] = ProductImageSerializer(image, context=self.context).data if image else None
+        return data
     def validate(self,attrs):
         ptype=attrs.get("product_type",getattr(self.instance,"product_type",None)); sku=attrs.get("sku",getattr(self.instance,"sku",None)); status=attrs.get("status",getattr(self.instance,"status",Product.Status.DRAFT))
         if self.instance and "product_type" in attrs and attrs["product_type"]!=self.instance.product_type: raise serializers.ValidationError({"product_type":"Product type is immutable after creation; create a new product to change stock identity."})
@@ -91,6 +115,21 @@ class ProductAdminSerializer(serializers.ModelSerializer):
 class VariantAdminSerializer(serializers.ModelSerializer):
     attribute_value_ids=serializers.PrimaryKeyRelatedField(source="attributes",many=True,queryset=AttributeValue.objects.all(),write_only=True,required=False)
     class Meta: model=ProductVariant; fields=("id","uuid","product","sku","barcode","price_override","cost_price","weight","is_active","attribute_value_ids")
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        available = getattr(instance, "admin_available_stock", None)
+        if available is None:
+            try:
+                available = instance.stock_item.stocks.aggregate(total=Sum("available_stock"))["total"] or 0
+            except Exception:
+                available = 0
+        data["available_stock"] = int(available or 0)
+        data["attributes"] = [
+            {"id": value.id, "attribute": value.attribute.name, "value": value.value, "slug": value.slug, "swatch": value.swatch}
+            for value in instance.attributes.all()
+        ]
+        return data
     def validate_product(self,product):
         if product.product_type!=Product.ProductType.VARIABLE: raise serializers.ValidationError("Variants are only valid for variable products.")
         return product

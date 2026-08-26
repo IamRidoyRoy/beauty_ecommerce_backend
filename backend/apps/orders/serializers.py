@@ -1,9 +1,12 @@
 from rest_framework import serializers
 
 from apps.accounts.utils import PhoneFormatError, normalize_phone
+from apps.catalog.models import Product, ProductVariant
 from apps.delivery.models import City, Thana
 from apps.payments.models import Payment
 from apps.shipping.models import ShippingMethod
+from apps.inventory.models import StockItem
+from apps.inventory.services import get_sellable_stock, resolve_stock_item
 
 from .models import Order, OrderItem
 
@@ -35,6 +38,75 @@ class CheckoutSerializer(serializers.Serializer):
             raise serializers.ValidationError({"thana": "Selected thana does not belong to the selected district."})
         return attrs
 
+
+class AdminOrderCreateItemSerializer(serializers.Serializer):
+    product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.filter(status=Product.Status.ACTIVE))
+    product_variant = serializers.PrimaryKeyRelatedField(
+        queryset=ProductVariant.objects.filter(is_active=True, product__status=Product.Status.ACTIVE),
+        required=False,
+        allow_null=True,
+    )
+    quantity = serializers.IntegerField(min_value=1, max_value=999)
+
+    def validate(self, attrs):
+        product = attrs["product"]
+        variant = attrs.get("product_variant")
+        if product.product_type == Product.ProductType.SIMPLE:
+            if variant is not None:
+                raise serializers.ValidationError({"product_variant": "Simple products must not include a variant."})
+        else:
+            if variant is None:
+                raise serializers.ValidationError({"product_variant": "Select a variant for this variable product."})
+            if variant.product_id != product.id:
+                raise serializers.ValidationError({"product_variant": "Selected variant does not belong to this product."})
+
+        try:
+            stock_item = resolve_stock_item(product=product if variant is None else None, variant=variant, create=False)
+            available = int(get_sellable_stock(stock_item=stock_item))
+        except StockItem.DoesNotExist:
+            available = 0
+        if attrs["quantity"] > available:
+            raise serializers.ValidationError({"quantity": f"Only {available} unit(s) are currently available."})
+        attrs["available_stock"] = available
+        return attrs
+
+
+class AdminOrderCreateSerializer(CheckoutSerializer):
+    items = AdminOrderCreateItemSerializer(many=True, allow_empty=False)
+
+    def validate_items(self, value):
+        seen = set()
+        for item in value:
+            key = (item["product"].id, item.get("product_variant").id if item.get("product_variant") else None)
+            if key in seen:
+                raise serializers.ValidationError("Duplicate product/variant rows are not allowed. Increase the quantity instead.")
+            seen.add(key)
+        return value
+
+
+
+
+class AdminOrderCouponPreviewSerializer(serializers.Serializer):
+    code = serializers.CharField(max_length=60)
+    phone = serializers.CharField(required=False, allow_blank=True, max_length=24)
+    items = AdminOrderCreateItemSerializer(many=True, allow_empty=False)
+
+    def validate_phone(self, value):
+        if not value:
+            return value
+        try:
+            return normalize_phone(value)
+        except PhoneFormatError as exc:
+            raise serializers.ValidationError(str(exc))
+
+    def validate_items(self, value):
+        seen = set()
+        for item in value:
+            key = (item["product"].id, item.get("product_variant").id if item.get("product_variant") else None)
+            if key in seen:
+                raise serializers.ValidationError("Duplicate product/variant rows are not allowed. Increase the quantity instead.")
+            seen.add(key)
+        return value
 
 class PublicPaymentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -103,13 +175,33 @@ class AdminCustomerListSerializer(serializers.ModelSerializer):
     lifetime_spend = serializers.DecimalField(max_digits=16, decimal_places=2, read_only=True)
     average_order = serializers.DecimalField(max_digits=16, decimal_places=2, read_only=True)
     last_order = serializers.DateTimeField(read_only=True, allow_null=True)
+    checkout_address = serializers.SerializerMethodField()
 
     class Meta:
         model = User
         fields = (
             "id", "uuid", "full_name", "phone", "email", "is_active", "created_at",
-            "orders_count", "lifetime_spend", "average_order", "last_order",
+            "orders_count", "lifetime_spend", "average_order", "last_order", "checkout_address",
         )
+
+    def get_checkout_address(self, obj):
+        # Use the customer's saved default address when available; otherwise use
+        # the most recently created saved address. The view prefetches addresses,
+        # so this does not add per-customer database queries.
+        addresses = list(obj.addresses.all())
+        if not addresses:
+            return None
+        address = next((row for row in addresses if row.is_default), None) or max(addresses, key=lambda row: row.created_at)
+        return {
+            "id": address.id,
+            "name": address.name,
+            "phone": address.phone,
+            "district": address.district,
+            "thana": address.thana,
+            "address": address.address,
+            "label": address.label,
+            "is_default": address.is_default,
+        }
 
 
 class AdminCustomerDetailSerializer(AdminCustomerListSerializer):

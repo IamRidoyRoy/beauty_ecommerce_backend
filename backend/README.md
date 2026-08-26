@@ -259,3 +259,8 @@ python manage.py migrate
 ```
 
 Hero slide media is stored under `MEDIA_ROOT/hero_slides/`.
+
+
+### Management order creation
+
+`POST /api/v1/admin/orders/create-order/` is available to Super Admin, Admin, Manager and Order Manager roles. It accepts customer delivery details plus native simple/variable product targets, builds an isolated cart, and delegates to the centralized checkout service so stock, delivery pricing, promotions, payments and snapshots are not duplicated.

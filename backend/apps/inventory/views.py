@@ -34,7 +34,7 @@ class StockMovementViewSet(ReadOnlyModelViewSet):
     queryset=StockMovement.objects.select_related("stock_item__product","stock_item__variant__product","warehouse","created_by").order_by("-created_at"); filterset_fields=("stock_item","warehouse","movement_type","reference_type","reference_id"); search_fields=("note","reference_type","reference_id","stock_item__product__name","stock_item__product__sku","stock_item__variant__sku"); ordering_fields=("created_at","quantity")
 class PurchaseViewSet(ModelViewSet):
     permission_classes=[InventoryAdmin]; serializer_class=PurchaseSerializer
-    queryset=Purchase.objects.select_related("supplier","warehouse","created_by","approved_by","received_by").prefetch_related("items__product","items__product_variant__product").order_by("-id")
+    queryset=Purchase.objects.select_related("supplier","warehouse","created_by","approved_by","received_by").prefetch_related("items__product__images","items__product_variant__product__images","items__product_variant__images","items__product_variant__attributes__attribute").order_by("-id")
     filterset_fields=("status","supplier","warehouse"); search_fields=("purchase_number","supplier_invoice","supplier__name"); ordering_fields=("created_at","purchase_date","total","expected_date")
     def perform_create(self,serializer): serializer.save(created_by=self.request.user)
     @action(detail=True,methods=["post"])
@@ -47,7 +47,7 @@ class PurchaseViewSet(ModelViewSet):
         obj=receive_purchase(purchase=self.get_object(),receipts=s.validated_data["receipts"],user=request.user)
         return success(PurchaseSerializer(obj,context={"request":request}).data,"Purchase received.")
 class PurchaseItemViewSet(ModelViewSet):
-    permission_classes=[InventoryAdmin]; serializer_class=PurchaseItemSerializer; queryset=PurchaseItem.objects.select_related("purchase","product","product_variant__product").all(); filterset_fields=("purchase",)
+    permission_classes=[InventoryAdmin]; serializer_class=PurchaseItemSerializer; queryset=PurchaseItem.objects.select_related("purchase","product","product_variant__product").prefetch_related("product__images","product_variant__product__images","product_variant__images","product_variant__attributes__attribute").all(); filterset_fields=("purchase",)
 class TransferStockView(APIView):
     permission_classes=[InventoryAdmin]
     def post(self,request):

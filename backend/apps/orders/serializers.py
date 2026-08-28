@@ -26,6 +26,12 @@ class CheckoutSerializer(serializers.Serializer):
     payment_method = serializers.ChoiceField(choices=Payment.Method.choices)
     coupon_code = serializers.CharField(required=False, allow_blank=True, max_length=60)
     order_note = serializers.CharField(required=False, allow_blank=True)
+    # Browser attribution context used only for first-party server-side Meta CAPI.
+    # These fields do not alter order pricing or fulfillment.
+    event_source_url = serializers.CharField(required=False, allow_blank=True, max_length=2000)
+    fbp = serializers.CharField(required=False, allow_blank=True, max_length=255)
+    fbc = serializers.CharField(required=False, allow_blank=True, max_length=255)
+    marketing_consent = serializers.BooleanField(required=False, default=True)
 
     def validate_phone(self, value):
         try:

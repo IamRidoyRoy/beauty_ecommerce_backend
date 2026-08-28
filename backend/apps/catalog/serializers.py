@@ -3,10 +3,7 @@ from django.db.models import Sum
 from .models import *
 
 class CategorySerializer(serializers.ModelSerializer):
-    # Category images are optional. On PATCH, a client that is only editing
-    # metadata/order should not be forced to re-upload the current image.
-    image=serializers.ImageField(required=False,allow_null=True)
-    class Meta: model=Category; fields=("id","name","slug","parent","image","description","active","order","seo","updated_at")
+    class Meta: model=Category; fields=("id","name","slug","parent","image","description","active","order","seo")
     def validate_parent(self,parent):
         if not self.instance or not parent:return parent
         if parent.pk==self.instance.pk: raise serializers.ValidationError("Category cannot be its own parent.")
@@ -15,22 +12,6 @@ class CategorySerializer(serializers.ModelSerializer):
             if cursor.pk==self.instance.pk: raise serializers.ValidationError("Category hierarchy cannot contain a cycle.")
             cursor=cursor.parent
         return parent
-    def create(self,validated_data):
-        # ImageField is blank=True rather than null=True. Treat null from JSON
-        # clients as "no image supplied" instead of trying to persist NULL.
-        if validated_data.get("image",serializers.empty) is None:
-            validated_data.pop("image",None)
-        return super().create(validated_data)
-    def update(self,instance,validated_data):
-        # Preserve the current image when a metadata-only PATCH contains null.
-        # To replace an image, send an actual multipart image file.
-        if validated_data.get("image",serializers.empty) is None:
-            validated_data.pop("image",None)
-        return super().update(instance,validated_data)
-    def to_representation(self,instance):
-        data=super().to_representation(instance)
-        data["image"]=instance.image.url if instance.image else None
-        return data
 class BrandSerializer(serializers.ModelSerializer):
     class Meta: model=Brand; fields=("id","name","slug","logo","cover","description","country","website","featured","active","seo")
 class AttributeValueSerializer(serializers.ModelSerializer):

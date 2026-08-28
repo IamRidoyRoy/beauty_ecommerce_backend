@@ -11,6 +11,8 @@ from apps.common.permissions import role_permission
 from apps.common.responses import success
 from apps.carts.services import get_request_cart
 from apps.common.models import AnalyticsEvent
+from apps.tracking.services import send_purchase_for_order
+from apps.tracking.models import TrackingSettings, TrackingEventLog
 from .models import Order
 from .serializers import CheckoutSerializer,OrderSerializer,AdminOrderSerializer,OrderTransitionSerializer,AdminOrderCreateSerializer,AdminOrderCouponPreviewSerializer,AdminCustomerListSerializer,AdminCustomerDetailSerializer
 from .services import checkout,transition_order_to_status,create_admin_order,preview_admin_order_coupon
@@ -25,6 +27,28 @@ class CheckoutView(APIView):
         AnalyticsEvent.objects.create(event_type=AnalyticsEvent.EventType.CHECKOUT_STARTED,user=request.user if request.user.is_authenticated else None,cart_token=str(cart.token))
         result=checkout(cart=cart,customer_data=customer,shipping_method=v.get("shipping_method"),payment_method=v["payment_method"],coupon_code=v.get("coupon_code","").strip(),request_user=request.user if request.user.is_authenticated else None,order_note=v.get("order_note", ""))
         AnalyticsEvent.objects.create(event_type=AnalyticsEvent.EventType.ORDER_COMPLETED,user=result["order"].user,cart_token=str(cart.token),metadata={"order_number":result["order"].order_number,"total":str(result["order"].total)})
+        # Purchase is the authoritative server-side conversion. Browser GTM will
+        # fire the same event_id (purchase:<order_number>) for Meta deduplication.
+        try:
+            tracking_settings = TrackingSettings.current()
+            if not tracking_settings.require_marketing_consent or v.get("marketing_consent", True):
+                send_purchase_for_order(order=result["order"], request=request)
+        except Exception as exc:
+            # Tracking must never make a successfully validated order fail. This
+            # also keeps checkout operational if deployment code is copied before
+            # the tracking migration has been applied.
+            try:
+                TrackingEventLog.objects.create(
+                    event_name="Purchase",
+                    event_id=f"purchase:{result['order'].order_number}",
+                    source="server",
+                    status=TrackingEventLog.Status.FAILED,
+                    user_id_ref=getattr(result["order"].user, "id", None),
+                    order_number=result["order"].order_number,
+                    error_message=f"Unexpected tracking failure: {exc}",
+                )
+            except Exception:
+                pass
         data={"order":OrderSerializer(result["order"],context={"request":request}).data,"account_created":result["account_created"],"existing_account":result.get("existing_account",False),"verification_required":result.get("verification_required",False),"verification_bypassed":result.get("verification_bypassed",False),"delivery":result.get("delivery",{})}
         if result.get("auth"): data["auth"]=result["auth"]
         return success(data,"Order placed successfully.",201)

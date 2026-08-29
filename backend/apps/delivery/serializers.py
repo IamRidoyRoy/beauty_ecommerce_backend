@@ -8,6 +8,11 @@ class DeliveryModuleSerializer(serializers.ModelSerializer):
         model = DeliveryModule
         fields = ("id", "name", "code", "charge", "active", "sort_order")
 
+    def validate_charge(self, value):
+        if value < 0:
+            raise serializers.ValidationError("Delivery charge cannot be negative.")
+        return value
+
 
 class CitySerializer(serializers.ModelSerializer):
     delivery_module = DeliveryModuleSerializer(read_only=True)

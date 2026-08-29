@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import SiteBrandingSettings
+from .models import HomepageBanner, SiteBrandingSettings
 
 
 @admin.register(SiteBrandingSettings)
@@ -12,6 +12,20 @@ class SiteBrandingSettingsAdmin(admin.ModelAdmin):
 
     def has_add_permission(self, request):
         return not SiteBrandingSettings.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
+@admin.register(HomepageBanner)
+class HomepageBannerAdmin(admin.ModelAdmin):
+    list_display = ("slot", "title", "link_type", "active", "updated_at")
+    list_filter = ("active", "slot", "link_type")
+    search_fields = ("title", "subtitle", "eyebrow", "link_value")
+    readonly_fields = ("slot",)
+
+    def has_add_permission(self, request):
+        return False
 
     def has_delete_permission(self, request, obj=None):
         return False

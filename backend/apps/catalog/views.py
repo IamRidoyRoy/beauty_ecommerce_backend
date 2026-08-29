@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.http import HttpResponse
 from django.db.models.functions import Coalesce
 from django.db import transaction
-from django.db.models import Q, Max, Sum, Value, IntegerField, Case, When
+from django.db.models import Q, Min, Max, Sum, Value, IntegerField, Case, When
 from rest_framework.decorators import action
 from rest_framework.parsers import MultiPartParser,FormParser
 from openpyxl import load_workbook, Workbook
@@ -33,6 +33,22 @@ class ProductViewSet(ReadOnlyModelViewSet):
     def get_serializer_class(self): return ProductDetailSerializer if self.action=="retrieve" else ProductListSerializer
     @action(detail=False,methods=["get"],url_path="search")
     def search(self,request): return self.list(request)
+
+    @action(detail=False,methods=["get"],url_path="filter-meta")
+    def filter_meta(self,request):
+        """Return lightweight catalog bounds used by storefront filter controls."""
+        qs=Product.objects.filter(status=Product.Status.ACTIVE)
+        brand=request.query_params.get("brand")
+        category=request.query_params.get("category")
+        product_type=request.query_params.get("product_type")
+        if brand: qs=qs.filter(brand__slug=brand)
+        if category: qs=qs.filter(category__slug=category)
+        if product_type: qs=qs.filter(product_type=product_type)
+        bounds=qs.aggregate(min_price=Min("base_price"),max_price=Max("base_price"))
+        min_price=bounds["min_price"] if bounds["min_price"] is not None else Decimal("0")
+        max_price=bounds["max_price"] if bounds["max_price"] is not None else Decimal("10000")
+        if max_price <= min_price: max_price=min_price+Decimal("1")
+        return success({"min_price":float(min_price),"max_price":float(max_price)})
 class CategoryViewSet(ReadOnlyModelViewSet):
     permission_classes=[AllowAny]; serializer_class=CategorySerializer
     queryset=(Category.objects.filter(active=True).select_related("parent")

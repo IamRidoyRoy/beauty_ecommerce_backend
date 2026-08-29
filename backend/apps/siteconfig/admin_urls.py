@@ -1,4 +1,12 @@
-from django.urls import path
-from .views import SiteBrandingAdminView
+from django.urls import include, path
+from rest_framework.routers import DefaultRouter
 
-urlpatterns = [path("site-settings/", SiteBrandingAdminView.as_view())]
+from .views import HomepageBannerAdminViewSet, SiteBrandingAdminView
+
+router = DefaultRouter()
+router.register("homepage-banners", HomepageBannerAdminViewSet, basename="admin-homepage-banners")
+
+urlpatterns = [
+    path("site-settings/", SiteBrandingAdminView.as_view()),
+    path("", include(router.urls)),
+]

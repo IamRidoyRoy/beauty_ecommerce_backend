@@ -1,14 +1,31 @@
-# Dashboard Content & Staff Module Access Upgrade
+# Dashboard Content & Granular Staff Access
 
-## New controls
+## Content controls
 
 - Marketing -> Homepage Content -> Top promotional bar
 - Marketing -> Homepage Content -> Homepage hero slider
-- Users & Roles -> per-user dashboard module access
+- Marketing -> Homepage Content -> promotional/editorial banners
+
+## Staff access
+
+Users & Roles now supports detailed page-level permissions instead of only broad app permissions.
+
+Examples:
+- Marketing -> Coupons
+- Marketing -> Promotions
+- Marketing -> Campaigns
+- Marketing -> Homepage Content
+- Courier -> Courier Orders / Shipment Tracking / Delivery Areas
+- Catalog -> Products / Categories / Brands / Attributes / Shades / Product Images
+- Settings -> General / Branding / Payment Gateways / Courier Integrations / Pixel & Tracking
+
+The assigned role remains the capability ceiling. The selected module list can only restrict what that role is already permitted to do.
+
+Backend management API requests use the same granular permission keys, so hiding a sidebar item is not the only protection. Some read-only lookup endpoints intentionally accept related permissions where a permitted page needs reference data (for example coupon targeting needs product/brand/category choices).
 
 ## Database migration
 
-Run after replacing the backend:
+For the original content/access upgrade run:
 
 ```bash
 python manage.py migrate siteconfig
@@ -16,20 +33,13 @@ python manage.py migrate accesscontrol
 python manage.py migrate
 ```
 
-Expected new migrations:
-
+Expected migrations include:
 - `siteconfig.0003_announcement_item`
 - `accesscontrol.0001_initial`
 
-The access-control migration creates a new independent table and does not modify the legacy accounts table.
+The granular permission expansion itself requires **no new migration**. Existing access rows that contain old broad keys are expanded automatically for backwards compatibility.
 
-## Staff access behavior
-
-Role permissions remain the capability ceiling. The selected module list further restricts access. The backend checks the module on management API requests, so hiding a menu is not the only protection.
-
-Existing staff users with no access-profile row keep their existing role-default access. Once an admin saves module access for a staff user, the explicit selection is enforced.
-
-Staff should sign in again after their module access is changed so the dashboard receives the newest module list in the authenticated user payload.
+After changing a staff user's access, have the user sign out and sign in again so the newest `dashboard_modules` list is loaded.
 
 ## Hero image guidance
 

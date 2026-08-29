@@ -215,26 +215,27 @@ class GlobalSearchView(APIView):
         def add(type_,id_,title,subtitle,url):
             if len(results)<30:
                 results.append({'type':type_,'id':id_,'title':title,'subtitle':subtitle or '', 'url':url})
-        if has_module_access(request.user,'orders'):
+        if has_module_access(request.user,'orders_view'):
             for row in Order.objects.filter(Q(order_number__icontains=query)|Q(customer_name__icontains=query)|Q(customer_phone__icontains=query)|Q(items__sku_snapshot__icontains=query)).distinct().order_by('-created_at')[:6]:
                 add('order',row.id,row.order_number,f'{row.customer_name} · {row.customer_phone}',f'/sales/orders/{row.order_number}')
         if has_module_access(request.user,'customers'):
             for row in User.objects.filter(role=UserRole.CUSTOMER).filter(Q(full_name__icontains=query)|Q(phone__icontains=query)|Q(email__icontains=query)).order_by('-id')[:5]:
                 add('customer',row.id,row.full_name or row.phone or row.email or f'Customer #{row.id}',row.phone or row.email or '',f'/customers/{row.id}')
-        if has_module_access(request.user,'catalog'):
+        if has_module_access(request.user,'catalog_products'):
             for row in Product.objects.filter(Q(name__icontains=query)|Q(sku__icontains=query)|Q(barcode__icontains=query)|Q(variants__sku__icontains=query)).distinct().order_by('-id')[:6]:
                 add('product',row.id,row.name,row.sku or 'Variable product',f'/catalog/products/{row.id}/edit')
             for row in ProductVariant.objects.select_related('product').filter(Q(sku__icontains=query)|Q(barcode__icontains=query)|Q(product__name__icontains=query)).order_by('-id')[:4]:
                 add('variant',row.id,row.sku,row.product.name,f'/catalog/variants?product={row.product_id}')
-        if has_module_access(request.user,'procurement'):
+        if has_module_access(request.user,'procurement_suppliers'):
             for row in Supplier.objects.filter(Q(name__icontains=query)|Q(phone__icontains=query)|Q(email__icontains=query))[:4]:
                 add('supplier',row.id,row.name,row.phone or row.email or '',f'/procurement/suppliers?search={query}')
+        if has_module_access(request.user,'procurement_purchases'):
             for row in Purchase.objects.select_related('supplier').filter(Q(purchase_number__icontains=query)|Q(supplier_invoice__icontains=query)|Q(supplier__name__icontains=query)).order_by('-id')[:4]:
                 add('purchase',row.id,row.purchase_number,row.supplier.name,f'/procurement/purchases/{row.id}')
-        if has_module_access(request.user,'marketing'):
+        if has_module_access(request.user,'marketing_coupons'):
             for row in Coupon.objects.filter(code__icontains=query)[:3]:
                 add('coupon',row.id,row.code,row.coupon_type,'/marketing/coupons')
-        if has_module_access(request.user,'shipping'):
+        if has_module_access(request.user,'courier_shipments'):
             for row in Shipment.objects.select_related('order').filter(Q(tracking_code__icontains=query)|Q(order__order_number__icontains=query)|Q(courier__icontains=query)).order_by('-id')[:4]:
-                add('shipment',row.id,row.tracking_code or f'Shipment #{row.id}',f'{row.courier} · {row.order.order_number}','/sales/shipments')
+                add('shipment',row.id,row.tracking_code or f'Shipment #{row.id}',f'{row.courier} · {row.order.order_number}','/courier/shipments')
         return success(results)

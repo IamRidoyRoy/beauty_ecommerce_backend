@@ -45,7 +45,6 @@ class ReviewTests(TestCase):
             Order.Status.CONFIRMED,
             Order.Status.PROCESSING,
             Order.Status.PACKED,
-            Order.Status.READY_TO_SHIP,
             Order.Status.SHIPPED,
             Order.Status.OUT_FOR_DELIVERY,
             Order.Status.DELIVERED,

@@ -172,7 +172,18 @@ class AdminOrderViewSet(ReadOnlyModelViewSet):
         if new_status in {Order.Status.RETURN_REQUESTED,Order.Status.PARTIALLY_RETURNED,Order.Status.RETURNED,Order.Status.REFUNDED}:
             from rest_framework.exceptions import ValidationError
             raise ValidationError({"order_status":"Use the return/refund service endpoints for return and refund states."})
-        return success(AdminOrderSerializer(transition_order_to_status(order=self.get_object(),new_status=new_status,actor=request.user),context={"request":request}).data,"Order status updated.")
+        order=self.get_object()
+        # Dashboard operations stop at Packed until a courier accepts the parcel.
+        # This prevents a staff user from manually creating a Shipped order that
+        # has no submitted courier/tracking record and would be impossible to send
+        # from the dedicated Courier module afterwards.
+        courier_required={Order.Status.SHIPPED,Order.Status.OUT_FOR_DELIVERY,Order.Status.DELIVERED}
+        if new_status in courier_required:
+            active_shipment=order.shipments.exclude(status__in=["cancelled","failed","returned"]).exists()
+            if not active_shipment:
+                from rest_framework.exceptions import ValidationError
+                raise ValidationError({"order_status":"Submit this Packed order from Sales → Courier before moving it beyond Packed."})
+        return success(AdminOrderSerializer(transition_order_to_status(order=order,new_status=new_status,actor=request.user),context={"request":request}).data,"Order status updated.")
     @action(detail=True,methods=["get"])
     def invoice(self,request,order_number=None):
         order=self.get_object(); data={"company":{"name":"Beauty Commerce","address":"Configure company address","phone":"Configure company phone"},"invoice_number":f"INV-{order.order_number}","order":OrderSerializer(order,context={"request":request}).data,"customer":{"name":order.customer_name,"phone":order.customer_phone},"address":order.shipping_address_snapshot,"payment": [{"method":p.method,"status":p.status,"amount":str(p.amount),"transaction_id":p.transaction_id} for p in order.payments.all()],"shipment":[{"courier":x.courier,"tracking_code":x.tracking_code,"status":x.status} for x in order.shipments.all()]}

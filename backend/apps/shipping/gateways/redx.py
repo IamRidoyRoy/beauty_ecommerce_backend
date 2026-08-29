@@ -89,7 +89,9 @@ class RedXAdapter(BaseCourierAdapter):
             return "failed"
         if "out-for-delivery" in s or "delivery-in-progress" in s:
             return "out_for_delivery"
-        if s in {"delivered", "delivery-completed", "completed"} or s.endswith("-delivered"):
+        if "partial" in s and "deliver" in s:
+            return "in_transit"
+        if "delivered" in s or s in {"delivery-completed", "delivery-success", "successful-delivery", "completed"}:
             return "delivered"
         if "transit" in s or "hub" in s or "sorting" in s:
             return "in_transit"

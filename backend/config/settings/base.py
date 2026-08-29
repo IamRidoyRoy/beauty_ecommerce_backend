@@ -75,6 +75,7 @@ CELERY_BEAT_SCHEDULE = {
     "payment-reconciliation-every-10m": {"task": "apps.payments.tasks.reconcile_open_gateway_payments", "schedule": 600.0},
     "courier-auto-book-every-minute": {"task": "apps.shipping.tasks.auto_book_courier_orders", "schedule": 60.0},
     "courier-tracking-sync-every-5m": {"task": "apps.shipping.tasks.sync_courier_shipments", "schedule": 300.0},
+    "courier-delivered-order-reconcile-every-minute": {"task": "apps.shipping.tasks.reconcile_delivered_courier_orders", "schedule": 60.0},
 }
 
 

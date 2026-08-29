@@ -41,7 +41,7 @@ class OrderLifecycleTests(TestCase):
 
     def test_deliver_consumes_reserved(self):
         order = self.place()
-        for s in [Order.Status.CONFIRMED, Order.Status.PROCESSING, Order.Status.PACKED, Order.Status.READY_TO_SHIP, Order.Status.SHIPPED, Order.Status.OUT_FOR_DELIVERY, Order.Status.DELIVERED]:
+        for s in [Order.Status.CONFIRMED, Order.Status.PROCESSING, Order.Status.PACKED, Order.Status.SHIPPED, Order.Status.OUT_FOR_DELIVERY, Order.Status.DELIVERED]:
             order = transition_order(order=order, new_status=s)
         stock = ProductStock.objects.get(stock_item=self.si, warehouse=self.wh)
         self.assertEqual((stock.available_stock, stock.reserved_stock), (3, 0))

@@ -88,7 +88,15 @@ def _apply_result(shipment: Shipment, result: CourierResult) -> Shipment:
     return shipment
 
 
-def _sync_order_from_shipment(shipment: Shipment) -> None:
+def _sync_order_from_shipment(shipment: Shipment) -> bool:
+    """Advance the commerce order from the courier shipment state.
+
+    The courier status remains the source of truth for fulfilment progress. This
+    method is intentionally idempotent: repeated webhook/tracking events never
+    move an order backwards and a Delivered shipment can safely be reconciled
+    again until the order transition (inventory/payment side effects included)
+    succeeds.
+    """
     target = None
     if shipment.status in {Shipment.Status.PICKED, Shipment.Status.IN_TRANSIT}:
         target = Order.Status.SHIPPED
@@ -97,25 +105,66 @@ def _sync_order_from_shipment(shipment: Shipment) -> None:
     elif shipment.status == Shipment.Status.DELIVERED:
         target = Order.Status.DELIVERED
     if not target:
-        return
-    order = shipment.order
+        return True
+
+    # Always reload the order: webhook and Celery workers can update the same
+    # order concurrently and the Shipment relation may hold a stale instance.
+    order = Order.objects.filter(pk=shipment.order_id).first()
+    if not order:
+        return False
+
+    # Return/refund/cancel workflows are terminal business workflows and must
+    # never be overwritten by a late courier callback.
     if order.order_status not in ORDER_LIFECYCLE or target not in ORDER_LIFECYCLE:
-        return
+        return True
     if ORDER_LIFECYCLE.index(target) <= ORDER_LIFECYCLE.index(order.order_status):
-        return
+        return True
+
     try:
         transition_order_to_status(order=order, new_status=target, actor=None)
-    except Exception:
-        # Shipment tracking must never be lost because an order workflow side effect failed.
-        pass
+        return True
+    except Exception as exc:
+        # Do not roll back a valid provider status. A separate local
+        # reconciliation task retries Delivered -> Order Delivered every minute
+        # without hitting the courier API again. Keep a durable event for ops.
+        _record_event(
+            provider=shipment.courier,
+            action=CourierEvent.Action.TRACK,
+            success=False,
+            shipment=shipment,
+            request_payload={"source": "order_status_sync", "target_order_status": target},
+            error=f"Order status sync failed: {exc}",
+        )
+        return False
 
 
 def _validate_booking_order(order: Order) -> None:
-    if order.order_status in {Order.Status.CANCELLED, Order.Status.DELIVERED, Order.Status.RETURNED, Order.Status.REFUNDED}:
-        raise CourierGatewayError(f"Order {order.order_number} cannot be booked in status {order.order_status}.", code="order_not_bookable")
+    # Courier submission is intentionally a Packed -> Shipped workflow. Orders
+    # that are already Shipped stay visible in the courier panel but cannot be
+    # submitted again, preventing duplicate parcels across providers.
+    if order.order_status != Order.Status.PACKED:
+        raise CourierGatewayError(
+            f"Only Packed orders can be submitted to a courier. {order.order_number} is currently {order.order_status}.",
+            code="order_not_packed",
+        )
     latest_payment = order.payments.order_by("-created_at").first()
     if latest_payment and latest_payment.method != "cod" and order.payment_status != Order.PaymentStatus.PAID:
         raise CourierGatewayError("Online payment must be verified before courier booking.", code="payment_not_paid")
+
+
+def _mark_order_shipped_after_booking(order: Order) -> None:
+    """Mark a Packed order Shipped only after the courier accepted the parcel.
+
+    Packed -> Shipped has no inventory consumption side effect, so this small
+    update is kept inside the courier booking transaction and avoids triggering
+    a second auto-book task from the generic order lifecycle service.
+    """
+    now = timezone.now()
+    Order.objects.filter(pk=order.pk, order_status=Order.Status.PACKED).update(
+        order_status=Order.Status.SHIPPED,
+        fulfillment_status=Order.FulfillmentStatus.PROCESSING,
+        updated_at=now,
+    )
 
 
 @transaction.atomic
@@ -145,6 +194,7 @@ def book_order(*, order: Order, provider: str, options: dict[str, Any] | None = 
     try:
         result = adapter.create_shipment(order, options=options or {})
         _apply_result(shipment, result)
+        _mark_order_shipped_after_booking(order)
         _record_event(provider=provider, action=CourierEvent.Action.BOOK, success=True, shipment=shipment, request_payload=request_payload, response_payload=result.raw, requested_by=actor)
         return shipment
     except Exception as exc:
@@ -220,26 +270,14 @@ def test_courier_connection(config: CourierConfig, *, actor=None) -> dict[str, A
         raise _as_gateway_error(exc, provider=provider, action="connection test") from exc
 
 
-def _eligible_order_statuses(trigger_status: str) -> tuple[str, ...]:
-    """Statuses at/after the configured trigger where booking is still meaningful.
-
-    This catches an order that was advanced multiple lifecycle steps in one dashboard action
-    while the async courier task was waiting to run.
-    """
-    if trigger_status not in ORDER_LIFECYCLE:
-        return (trigger_status,)
-    start = ORDER_LIFECYCLE.index(trigger_status)
-    delivered = ORDER_LIFECYCLE.index(Order.Status.DELIVERED)
-    return tuple(ORDER_LIFECYCLE[start:delivered])
-
-
-def auto_book_ready_orders(limit: int = 50) -> dict[str, int]:
+def auto_book_packed_orders(limit: int = 50) -> dict[str, int]:
+    """Automatically submit Packed orders when auto-book is enabled."""
     configs = list(CourierConfig.objects.filter(is_active=True, auto_book_enabled=True).order_by("sort_order", "id"))
     if not configs:
         return {"booked": 0, "failed": 0, "skipped": 0}
     booked = failed = skipped = 0
     for cfg in configs:
-        qs = Order.objects.filter(order_status__in=_eligible_order_statuses(cfg.auto_book_order_status)).exclude(
+        qs = Order.objects.filter(order_status=Order.Status.PACKED).exclude(
             shipments__status__in=[Shipment.Status.PENDING, Shipment.Status.BOOKED, Shipment.Status.PICKED, Shipment.Status.IN_TRANSIT, Shipment.Status.OUT_FOR_DELIVERY]
         ).distinct().order_by("created_at")[:limit]
         for order in qs:
@@ -247,7 +285,7 @@ def auto_book_ready_orders(limit: int = 50) -> dict[str, int]:
                 book_order(order=order, provider=cfg.provider, actor=None, source=Shipment.BookingSource.AUTO)
                 booked += 1
             except CourierGatewayError as exc:
-                if exc.code in {"payment_not_paid", "shipment_already_exists", "order_not_bookable"}:
+                if exc.code in {"payment_not_paid", "shipment_already_exists", "order_not_packed"}:
                     skipped += 1
                 else:
                     failed += 1
@@ -257,28 +295,18 @@ def auto_book_ready_orders(limit: int = 50) -> dict[str, int]:
 
 
 def auto_book_order(order_id: int) -> dict[str, Any]:
-    """Auto-book one order with the highest-priority eligible courier.
-
-    This is used by the order lifecycle on-commit hook for near real-time booking.
-    The periodic scanner remains as a catch-up path if Celery was temporarily unavailable.
-    """
+    """Auto-book one Packed order with the highest-priority enabled courier."""
     order = Order.objects.filter(pk=order_id).first()
     if not order:
         return {"booked": False, "reason": "order_not_found"}
+    if order.order_status != Order.Status.PACKED:
+        return {"booked": False, "reason": "order_not_packed"}
     if order.shipments.exclude(
         status__in=[Shipment.Status.CANCELLED, Shipment.Status.FAILED, Shipment.Status.RETURNED]
     ).exists():
         return {"booked": False, "reason": "active_shipment_exists"}
 
-    if order.order_status not in ORDER_LIFECYCLE or order.order_status == Order.Status.DELIVERED:
-        return {"booked": False, "reason": "order_status_not_auto_bookable"}
-    current_index = ORDER_LIFECYCLE.index(order.order_status)
-    configs = [
-        cfg
-        for cfg in CourierConfig.objects.filter(is_active=True, auto_book_enabled=True).order_by("sort_order", "id")
-        if cfg.auto_book_order_status in ORDER_LIFECYCLE
-        and ORDER_LIFECYCLE.index(cfg.auto_book_order_status) <= current_index
-    ]
+    configs = CourierConfig.objects.filter(is_active=True, auto_book_enabled=True).order_by("sort_order", "id")
     last_error = ""
     for cfg in configs:
         try:
@@ -296,8 +324,7 @@ def auto_book_order(order_id: int) -> dict[str, Any]:
             }
         except CourierGatewayError as exc:
             last_error = f"{exc.code}: {exc}"
-            # A validation error tied to the order itself will not be fixed by trying another courier.
-            if exc.code in {"payment_not_paid", "order_not_bookable", "shipment_already_exists"}:
+            if exc.code in {"payment_not_paid", "order_not_packed", "shipment_already_exists"}:
                 break
         except Exception as exc:
             last_error = str(exc)
@@ -314,6 +341,85 @@ def sync_open_shipments(limit: int = 200) -> dict[str, int]:
         except Exception:
             failed += 1
     return {"synced": synced, "failed": failed}
+
+
+def reconcile_delivered_order_statuses(limit: int = 500) -> dict[str, int]:
+    """Retry local order completion for courier-confirmed deliveries.
+
+    This is deliberately local-only (no provider API call), so it can run every
+    minute cheaply. It closes the reliability gap where a webhook/track request
+    stored Shipment=Delivered but an inventory/payment side effect temporarily
+    prevented Order=Delivered.
+    """
+    lifecycle_before_delivered = [
+        Order.Status.PENDING,
+        Order.Status.CONFIRMED,
+        Order.Status.PROCESSING,
+        Order.Status.PACKED,
+        Order.Status.SHIPPED,
+        Order.Status.OUT_FOR_DELIVERY,
+    ]
+    qs = (
+        Shipment.objects.filter(status=Shipment.Status.DELIVERED, order__order_status__in=lifecycle_before_delivered)
+        .select_related("order")
+        .order_by("delivered_at", "updated_at")[:limit]
+    )
+    reconciled = failed = 0
+    for shipment in qs:
+        if _sync_order_from_shipment(shipment):
+            reconciled += 1
+        else:
+            failed += 1
+    return {"reconciled": reconciled, "failed": failed}
+
+
+def _webhook_delivered_result(provider: str, payload: dict[str, Any], shipment: Shipment) -> CourierResult | None:
+    """Extract only a *delivered* signal from a verified provider webhook.
+
+    We intentionally do not apply generic webhook statuses such as ``success``
+    because some providers use those for request acknowledgement rather than
+    parcel delivery. Non-delivered progress still uses the provider tracking API.
+    """
+    nested_data = payload.get("data") if isinstance(payload.get("data"), dict) else {}
+    nested_parcel = payload.get("parcel") if isinstance(payload.get("parcel"), dict) else {}
+    candidates: list[str] = []
+    mapper = None
+
+    if provider == CourierConfig.Provider.PATHAO:
+        candidates = [
+            payload.get("order_status"),
+            payload.get("delivery_status"),
+            nested_data.get("order_status"),
+            nested_data.get("delivery_status"),
+        ]
+        mapper = PathaoAdapter._map_status
+    elif provider == CourierConfig.Provider.STEADFAST:
+        # Steadfast's published webhook body uses ``status`` for parcel status.
+        candidates = [payload.get("delivery_status"), payload.get("status"), nested_data.get("delivery_status"), nested_data.get("status")]
+        mapper = SteadfastAdapter._map_status
+    elif provider == CourierConfig.Provider.REDX:
+        candidates = [payload.get("delivery_status"), payload.get("parcel_status"), nested_parcel.get("status"), nested_data.get("parcel_status")]
+        mapper = RedXAdapter._map_status
+    elif provider == CourierConfig.Provider.CARRYBEE:
+        candidates = [payload.get("event"), payload.get("delivery_status"), nested_data.get("status")]
+        mapper = CarryBeeAdapter._map_status
+
+    if not mapper:
+        return None
+    for raw_status in candidates:
+        if raw_status in (None, ""):
+            continue
+        provider_status = str(raw_status)
+        if mapper(provider_status) == Shipment.Status.DELIVERED:
+            return CourierResult(
+                external_id=shipment.external_id,
+                tracking_code=shipment.tracking_code,
+                provider_status=provider_status,
+                status=Shipment.Status.DELIVERED,
+                message=provider_status,
+                raw={"webhook": payload},
+            )
+    return None
 
 
 def process_webhook(*, provider: str, payload: dict[str, Any], headers: dict[str, Any]) -> Shipment | None:
@@ -380,10 +486,17 @@ def process_webhook(*, provider: str, payload: dict[str, Any], headers: dict[str
         shipment = Shipment.objects.filter(courier=provider, order__order_number=invoice).order_by("-created_at").first()
     if shipment:
         try:
-            # CarryBee webhooks provide a signed event name. Apply it immediately so
-            # customer/admin tracking updates do not depend on a second provider call.
-            # The periodic/details API sync remains the reconciliation source of truth.
-            if provider == CourierConfig.Provider.CARRYBEE and payload.get("event"):
+            # A verified webhook that explicitly confirms Delivered updates the
+            # local shipment/order immediately. Other progress states still call
+            # the provider tracking endpoint so the API remains the reconciliation
+            # source of truth. This gives fast delivery completion with a safe
+            # periodic fallback if a webhook is missed.
+            delivered_result = _webhook_delivered_result(provider, payload, shipment)
+            if delivered_result is not None:
+                delivered_result.external_id = delivered_result.external_id or tracking
+                delivered_result.tracking_code = delivered_result.tracking_code or tracking
+                _apply_result(shipment, delivered_result)
+            elif provider == CourierConfig.Provider.CARRYBEE and payload.get("event"):
                 provider_event = str(payload.get("event") or "")
                 _apply_result(
                     shipment,

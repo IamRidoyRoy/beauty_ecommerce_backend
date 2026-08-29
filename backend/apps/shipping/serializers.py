@@ -42,6 +42,86 @@ class ShipmentSerializer(serializers.ModelSerializer):
         return cache[provider] and obj.status not in {"delivered", "cancelled", "returned"}
 
 
+class CourierDispatchOrderSerializer(serializers.ModelSerializer):
+    item_count = serializers.SerializerMethodField()
+    submitted_courier = serializers.SerializerMethodField()
+    submitted_courier_display = serializers.SerializerMethodField()
+    tracking_code = serializers.SerializerMethodField()
+    shipment_status = serializers.SerializerMethodField()
+    shipment_id = serializers.SerializerMethodField()
+    can_submit = serializers.SerializerMethodField()
+
+    class Meta:
+        from apps.orders.models import Order
+        model = Order
+        fields = (
+            "id", "order_number", "customer_name", "customer_phone", "shipping_address_snapshot",
+            "total", "order_status", "payment_status", "item_count", "submitted_courier",
+            "submitted_courier_display", "tracking_code", "shipment_status", "shipment_id",
+            "can_submit", "created_at", "updated_at",
+        )
+
+    def _shipment(self, obj):
+        cache = getattr(obj, "_courier_dispatch_shipment_cache", None)
+        if cache is not None:
+            return cache
+        rows = list(obj.shipments.all())
+        active = [row for row in rows if row.status not in {Shipment.Status.CANCELLED, Shipment.Status.FAILED, Shipment.Status.RETURNED}]
+        shipment = max(active, key=lambda row: row.created_at, default=None)
+        obj._courier_dispatch_shipment_cache = shipment
+        return shipment
+
+    def get_item_count(self, obj):
+        return sum(int(row.quantity or 0) for row in obj.items.all())
+
+    def get_submitted_courier(self, obj):
+        row = self._shipment(obj)
+        return row.courier if row else ""
+
+    def get_submitted_courier_display(self, obj):
+        row = self._shipment(obj)
+        if not row:
+            return ""
+        provider = (row.courier or "").lower()
+        cache = self.context.setdefault("_courier_display_names", {})
+        if provider not in cache:
+            cache[provider] = (
+                CourierConfig.objects.filter(provider=provider).values_list("display_name", flat=True).first()
+                or schema_for(provider).get("label", row.courier)
+            )
+        return cache[provider]
+
+    def get_tracking_code(self, obj):
+        row = self._shipment(obj)
+        return (row.tracking_code or row.external_id) if row else ""
+
+    def get_shipment_status(self, obj):
+        row = self._shipment(obj)
+        return row.status if row else ""
+
+    def get_shipment_id(self, obj):
+        row = self._shipment(obj)
+        return row.id if row else None
+
+    def get_can_submit(self, obj):
+        from apps.orders.models import Order
+        return obj.order_status == Order.Status.PACKED and self._shipment(obj) is None
+
+
+class CourierBatchSubmitSerializer(serializers.Serializer):
+    order_ids = serializers.ListField(
+        child=serializers.IntegerField(min_value=1),
+        allow_empty=False,
+        max_length=100,
+    )
+    provider = serializers.ChoiceField(choices=CourierConfig.Provider.choices)
+    options = serializers.DictField(required=False, default=dict)
+
+    def validate_order_ids(self, value):
+        # Preserve the selection order while removing duplicate IDs.
+        return list(dict.fromkeys(value))
+
+
 class CourierEventSerializer(serializers.ModelSerializer):
     requested_by_name = serializers.CharField(source="requested_by.full_name", read_only=True)
     class Meta:
@@ -73,7 +153,7 @@ class CourierConfigSerializer(serializers.ModelSerializer):
         )
         read_only_fields = (
             "id", "provider", "schema", "sandbox_values", "live_values", "sandbox_field_status", "live_field_status", "sandbox_configured",
-            "live_configured", "current_environment", "current_environment_configured", "updated_by", "updated_by_name", "created_at", "updated_at",
+            "live_configured", "current_environment", "current_environment_configured", "updated_by", "updated_by_name", "auto_book_order_status", "created_at", "updated_at",
         )
 
     def get_schema(self, obj):
@@ -144,6 +224,7 @@ class CourierConfigSerializer(serializers.ModelSerializer):
         request = self.context.get("request")
         if request and request.user.is_authenticated:
             instance.updated_by = request.user
+        instance.auto_book_order_status = "packed"
         selected = "sandbox" if instance.sandbox_mode and schema_for(instance.provider).get("supports_sandbox") else "live"
         if instance.is_active:
             values = {**default_values(instance.provider, selected), **self._stored(instance, selected)}

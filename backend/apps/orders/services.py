@@ -343,8 +343,7 @@ TRANSITIONS={
     Order.Status.PENDING:{Order.Status.CONFIRMED,Order.Status.CANCELLED},
     Order.Status.CONFIRMED:{Order.Status.PROCESSING,Order.Status.CANCELLED},
     Order.Status.PROCESSING:{Order.Status.PACKED,Order.Status.CANCELLED},
-    Order.Status.PACKED:{Order.Status.READY_TO_SHIP,Order.Status.CANCELLED},
-    Order.Status.READY_TO_SHIP:{Order.Status.SHIPPED,Order.Status.CANCELLED},
+    Order.Status.PACKED:{Order.Status.SHIPPED,Order.Status.CANCELLED},
     Order.Status.SHIPPED:{Order.Status.OUT_FOR_DELIVERY},
     Order.Status.OUT_FOR_DELIVERY:{Order.Status.DELIVERED},
     Order.Status.DELIVERED:{Order.Status.RETURN_REQUESTED,Order.Status.PARTIALLY_RETURNED,Order.Status.RETURNED,Order.Status.REFUNDED},
@@ -362,7 +361,6 @@ ORDER_LIFECYCLE=(
     Order.Status.CONFIRMED,
     Order.Status.PROCESSING,
     Order.Status.PACKED,
-    Order.Status.READY_TO_SHIP,
     Order.Status.SHIPPED,
     Order.Status.OUT_FOR_DELIVERY,
     Order.Status.DELIVERED,
@@ -403,7 +401,6 @@ def _apply_order_status(*,order,new_status,actor=None):
     elif new_status in {
         Order.Status.PROCESSING,
         Order.Status.PACKED,
-        Order.Status.READY_TO_SHIP,
         Order.Status.SHIPPED,
         Order.Status.OUT_FOR_DELIVERY,
     }:
@@ -436,7 +433,7 @@ def transition_order_to_status(*,order,new_status,actor=None):
     steps while still executing every intermediate side effect atomically.
 
     Example: confirmed -> delivered executes processing -> packed ->
-    ready_to_ship -> shipped -> out_for_delivery -> delivered internally.
+    shipped -> out_for_delivery -> delivered internally.
     """
     order=Order.objects.select_for_update().prefetch_related("items").get(pk=order.pk)
     if new_status==order.order_status:

@@ -134,13 +134,11 @@ Pending
               ├── Cancelled
               └── Packed
                     ├── Cancelled
-                    └── Ready To Ship
-                          ├── Cancelled
-                          └── Shipped
-                                ↓
-                          Out For Delivery
-                                ↓
-                            Delivered
+                    └── Shipped
+                          ↓
+                    Out For Delivery
+                          ↓
+                      Delivered
                                 ↓
                          Return Requested
                           ↙            ↘

@@ -31,7 +31,7 @@ class CourierConfig(TimeStampedModel):
     sandbox_mode = models.BooleanField(default=True, help_text="Use provider sandbox when available.")
     sort_order = models.PositiveSmallIntegerField(default=0, db_index=True)
     auto_book_enabled = models.BooleanField(default=False, db_index=True)
-    auto_book_order_status = models.CharField(max_length=30, default="ready_to_ship")
+    auto_book_order_status = models.CharField(max_length=30, default="packed")
     cancel_api_enabled = models.BooleanField(default=False, help_text="Enable provider-side cancellation only after the merchant API contract is verified.")
     sandbox_config_encrypted = models.TextField(blank=True, default="")
     live_config_encrypted = models.TextField(blank=True, default="")

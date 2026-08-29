@@ -11,12 +11,12 @@ This upgrade makes courier operations dashboard-controlled and keeps courier cre
 - Per-provider Active / Inactive control.
 - Per-provider Auto Book toggle and priority.
 - RedX provider-side cancellation is a separate explicit opt-in and is OFF by default.
-- Configurable order status that triggers auto booking (default: `ready_to_ship`).
+- Auto booking is triggered only when an order reaches `packed`. Disable Auto book if staff should select orders manually from the Courier module.
 - Near-real-time Celery task after an order transition plus a one-minute catch-up scan.
 - Five-minute tracking reconciliation/sync for open shipments.
 - Courier event history for booking, tracking, cancellation/return, webhook and connection tests.
 - Customer Order Detail API/UI shows courier, tracking code and latest courier status.
-- Only Super Admin/Admin can change courier credentials; operational shipment actions retain the existing shipping/order-management permissions.
+- Super Admin, Admin and Manager can change courier credentials; operational shipment actions retain the existing shipping/order-management permissions.
 
 ## Dashboard
 
@@ -31,13 +31,17 @@ For each provider:
 3. For Pathao/RedX/CarryBee choose Sandbox or Live.
 4. Enable **Active** to make the courier selectable for booking.
 5. Enable **Auto book** if orders should be booked automatically.
-6. Choose the order status that triggers auto booking and set priority. Lower priority numbers are tried first.
+6. Auto booking uses the fixed `Packed` trigger. Set provider priority; lower priority numbers are tried first. Keep Auto book OFF when staff should submit manually from Sales → Courier.
 
-Shipment operations are available at:
+Packed-order submission is available at:
 
-`Sales -> Shipments`
+`Sales -> Courier`
 
-The order detail screen also has **Shipment** booking and a courier shipment summary.
+Shipment tracking/history is available at:
+
+`Sales -> Shipment Tracking`
+
+The order detail screen links Packed orders to the Courier module and keeps the courier shipment summary.
 
 ## Environment security
 
@@ -66,7 +70,7 @@ python manage.py migrate shipping
 python manage.py migrate
 ```
 
-Do **not** fake `0002_courier_automation` or `0003_carrybee`; they create/update the courier automation schema and seed CarryBee configuration.
+Do **not** fake `0002_courier_automation`, `0003_carrybee`, or `0004_packed_courier_workflow`; they create/update the courier schema, seed CarryBee configuration, and normalize the Packed → Shipped workflow.
 
 Verify:
 
@@ -103,7 +107,7 @@ Scheduled tasks:
 
 - `apps.shipping.tasks.auto_book_courier_orders` — every 60 seconds (catch-up).
 - `apps.shipping.tasks.sync_courier_shipments` — every 5 minutes.
-- `apps.shipping.tasks.auto_book_courier_order` — queued immediately after an order lifecycle transition; it books only when a configured auto-book rule matches the order's current status.
+- `apps.shipping.tasks.auto_book_courier_order` — queued after lifecycle transitions; it books only when the order is `Packed` and Auto book is enabled.
 
 If the broker/worker is briefly unavailable, the on-commit task is best-effort and the periodic scan is the fallback.
 
@@ -208,7 +212,7 @@ Live:    https://developers.carrybee.com
 
 The adapter uses CarryBee Developers API v2 headers (`Client-ID`, `Client-Secret`, `Client-Context`). It books through `/api/v2/orders`, tracks through the order-details endpoint, and exposes provider cancellation only when **API cancel** is explicitly enabled in the Dashboard.
 
-CarryBee booking requires `city_id` and `zone_id` (`area_id` is optional). The backend first tries `/api/v2/address-details` using the saved order address, then falls back to city/zone list matching. If automatic resolution cannot produce a reliable city/zone, **Sales -> Shipments -> Book Shipment** exposes manual CarryBee City ID / Zone ID / Area ID overrides.
+CarryBee booking requires `city_id` and `zone_id` (`area_id` is optional). The backend first tries `/api/v2/address-details` using the saved order address, then falls back to city/zone list matching. If automatic resolution cannot produce a reliable city/zone, **Sales -> Shipment Tracking -> Book Shipment** exposes manual CarryBee City ID / Zone ID / Area ID overrides.
 
 Webhook endpoint:
 
@@ -251,7 +255,7 @@ A Steadfast partial-delivery status is deliberately **not** treated as a fully d
 3. Start Redis, Celery Worker and Celery Beat.
 4. Configure a sandbox provider first (Pathao, RedX or CarryBee).
 5. Test connection.
-6. Create a test order and move it to the configured auto-book status.
+6. Create a test order and move it to `Packed`. It should appear in Sales → Courier; with Auto book enabled it may be submitted automatically.
 7. Confirm exactly one shipment is created.
 8. Confirm tracking sync and event history.
 9. Configure/test webhooks over public HTTPS.

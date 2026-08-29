@@ -5,7 +5,7 @@ from apps.common.models import TimeStampedModel,UUIDModel
 from apps.catalog.models import Product,ProductVariant
 class Order(TimeStampedModel,UUIDModel):
     class Status(models.TextChoices):
-        PENDING="pending","Pending"; CONFIRMED="confirmed","Confirmed"; PROCESSING="processing","Processing"; PACKED="packed","Packed"; READY_TO_SHIP="ready_to_ship","Ready To Ship"; SHIPPED="shipped","Shipped"; OUT_FOR_DELIVERY="out_for_delivery","Out For Delivery"; DELIVERED="delivered","Delivered"; CANCELLED="cancelled","Cancelled"; RETURN_REQUESTED="return_requested","Return Requested"; RETURNED="returned","Returned"; PARTIALLY_RETURNED="partially_returned","Partially Returned"; REFUNDED="refunded","Refunded"
+        PENDING="pending","Pending"; CONFIRMED="confirmed","Confirmed"; PROCESSING="processing","Processing"; PACKED="packed","Packed"; SHIPPED="shipped","Shipped"; OUT_FOR_DELIVERY="out_for_delivery","Out For Delivery"; DELIVERED="delivered","Delivered"; CANCELLED="cancelled","Cancelled"; RETURN_REQUESTED="return_requested","Return Requested"; RETURNED="returned","Returned"; PARTIALLY_RETURNED="partially_returned","Partially Returned"; REFUNDED="refunded","Refunded"
     class PaymentStatus(models.TextChoices): PENDING="pending","Pending"; PAID="paid","Paid"; FAILED="failed","Failed"; PARTIAL_REFUND="partial_refund","Partially Refunded"; REFUNDED="refunded","Refunded"
     class FulfillmentStatus(models.TextChoices): UNFULFILLED="unfulfilled","Unfulfilled"; PROCESSING="processing","Processing"; FULFILLED="fulfilled","Fulfilled"; PARTIAL_RETURN="partial_return","Partially Returned"; RETURNED="returned","Returned"
     order_number=models.CharField(max_length=40,unique=True,db_index=True)

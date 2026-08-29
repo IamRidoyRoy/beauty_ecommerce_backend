@@ -3,7 +3,7 @@ from urllib.parse import quote_plus
 
 from rest_framework import serializers
 
-from .models import HomepageBanner, SiteBrandingSettings
+from .models import AnnouncementItem, HomepageBanner, SiteBrandingSettings
 
 HEX_RE = re.compile(r"^#[0-9A-Fa-f]{6}$")
 
@@ -152,3 +152,37 @@ class HomepageBannerSerializer(serializers.ModelSerializer):
             instance.image.delete(save=False)
             instance.image = None
         return super().update(instance, validated_data)
+
+
+class AnnouncementItemSerializer(serializers.ModelSerializer):
+    resolved_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = AnnouncementItem
+        fields = ("id","text","icon","link_type","link_value","resolved_url","active","order","created_at","updated_at")
+        read_only_fields = ("id","resolved_url","created_at","updated_at")
+
+    def validate(self, attrs):
+        link_type = attrs.get("link_type", getattr(self.instance, "link_type", AnnouncementItem.LinkType.NONE))
+        value = str(attrs.get("link_value", getattr(self.instance, "link_value", "")) or "").strip()
+        if link_type not in {AnnouncementItem.LinkType.NONE, AnnouncementItem.LinkType.PRODUCTS} and not value:
+            raise serializers.ValidationError({"link_value":"Choose or enter a destination."})
+        if link_type == AnnouncementItem.LinkType.CUSTOM and value and not (value.startswith("/") or value.startswith("https://") or value.startswith("http://")):
+            raise serializers.ValidationError({"link_value":"Custom destination must start with /, https:// or http://."})
+        return attrs
+
+    def get_resolved_url(self, obj):
+        value=(obj.link_value or "").strip()
+        if obj.link_type == AnnouncementItem.LinkType.NONE:
+            return ""
+        if obj.link_type == AnnouncementItem.LinkType.CUSTOM:
+            return value
+        if obj.link_type == AnnouncementItem.LinkType.PRODUCTS:
+            if not value: return "/products"
+            if value.startswith("?"): return f"/products{value}"
+            return f"/products?{value}"
+        if obj.link_type == AnnouncementItem.LinkType.CATEGORY: return f"/category/{value}"
+        if obj.link_type == AnnouncementItem.LinkType.BRAND: return f"/brand/{value}"
+        if obj.link_type == AnnouncementItem.LinkType.PRODUCT: return f"/product/{value}"
+        if obj.link_type == AnnouncementItem.LinkType.SEARCH: return f"/search?q={quote_plus(value)}"
+        return value

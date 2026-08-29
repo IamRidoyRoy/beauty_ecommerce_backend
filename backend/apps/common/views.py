@@ -10,6 +10,8 @@ from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.viewsets import ModelViewSet
 
 from apps.accounts.models import User, UserRole
+from apps.accesscontrol.catalog import ALL_MODULE_KEYS, ROLE_ALLOWED
+from apps.accesscontrol.services import access_options_payload, delete_user_access, get_effective_modules, is_access_customized, has_module_access, set_user_modules
 from apps.catalog.models import Product, ProductVariant
 from apps.inventory.models import Purchase, Supplier
 from apps.orders.models import Order
@@ -47,6 +49,16 @@ class HeroSlideSerializer(serializers.ModelSerializer):
     def validate_overlay_opacity(self, value):
         if value > 90:
             raise serializers.ValidationError("Overlay opacity must be between 0 and 90.")
+        return value
+
+    def validate_image(self,value):
+        if value and value.size > 5 * 1024 * 1024:
+            raise serializers.ValidationError("Hero image must be 5 MB or smaller. WebP under 200 KB is recommended.")
+        return value
+
+    def validate_mobile_image(self,value):
+        if value and value.size > 5 * 1024 * 1024:
+            raise serializers.ValidationError("Mobile hero image must be 5 MB or smaller. WebP under 200 KB is recommended.")
         return value
 
     def validate(self, attrs):
@@ -125,20 +137,34 @@ class CheckoutSettingsAdminView(APIView):
 
 class StaffUserSerializer(serializers.ModelSerializer):
     password=serializers.CharField(write_only=True,required=False,allow_blank=False,min_length=8)
+    dashboard_modules=serializers.ListField(child=serializers.ChoiceField(choices=ALL_MODULE_KEYS),required=False,write_only=True)
     class Meta:
         model=User
-        fields=('id','uuid','full_name','email','phone','role','is_active','is_staff','is_superuser','password','created_at','updated_at')
+        fields=('id','uuid','full_name','email','phone','role','is_active','is_staff','is_superuser','password','dashboard_modules','created_at','updated_at')
         read_only_fields=('id','uuid','is_superuser','created_at','updated_at')
     def validate_role(self,value):
         if value==UserRole.CUSTOMER:
             raise serializers.ValidationError('Customer role is not a staff dashboard role.')
         return value
+    def validate(self,attrs):
+        role=attrs.get('role',getattr(self.instance,'role',UserRole.MANAGER))
+        modules=attrs.get('dashboard_modules',None)
+        if modules is not None:
+            allowed=set(ROLE_ALLOWED.get(str(role),[]))
+            invalid=[m for m in modules if m not in allowed]
+            if invalid:
+                raise serializers.ValidationError({'dashboard_modules':f'These modules are not available for the selected role: {", ".join(invalid)}.'})
+        return attrs
     def create(self,validated_data):
+        modules=validated_data.pop('dashboard_modules',None)
         password=validated_data.pop('password',None)
         validated_data['is_staff']=True
         user=User.objects.create_user(password=password,**validated_data)
+        if modules is not None:
+            set_user_modules(user,modules)
         return user
     def update(self,instance,validated_data):
+        modules=validated_data.pop('dashboard_modules',None)
         password=validated_data.pop('password',None)
         if instance.is_superuser and 'role' in validated_data:
             validated_data['role']=UserRole.SUPER_ADMIN
@@ -148,7 +174,14 @@ class StaffUserSerializer(serializers.ModelSerializer):
         if password:
             instance.set_password(password)
         instance.save()
+        if modules is not None and not instance.is_superuser:
+            set_user_modules(instance,modules)
         return instance
+    def to_representation(self,instance):
+        data=super().to_representation(instance)
+        data['dashboard_modules']=get_effective_modules(instance)
+        data['dashboard_modules_customized']=is_access_customized(instance)
+        return data
 
 class StaffUserViewSet(ModelViewSet):
     permission_classes=[StaffAdmin]
@@ -164,7 +197,13 @@ class StaffUserViewSet(ModelViewSet):
             raise ValidationError({'user':'You cannot delete your own staff account.'})
         if instance.is_superuser:
             raise ValidationError({'user':'Superusers cannot be deleted from the dashboard.'})
+        delete_user_access(instance.pk)
         instance.delete()
+
+class StaffAccessOptionsView(APIView):
+    permission_classes=[StaffAdmin]
+    def get(self,request):
+        return success(access_options_payload())
 
 class GlobalSearchView(APIView):
     permission_classes=[SearchAdmin]
@@ -176,20 +215,26 @@ class GlobalSearchView(APIView):
         def add(type_,id_,title,subtitle,url):
             if len(results)<30:
                 results.append({'type':type_,'id':id_,'title':title,'subtitle':subtitle or '', 'url':url})
-        for row in Order.objects.filter(Q(order_number__icontains=query)|Q(customer_name__icontains=query)|Q(customer_phone__icontains=query)|Q(items__sku_snapshot__icontains=query)).distinct().order_by('-created_at')[:6]:
-            add('order',row.id,row.order_number,f'{row.customer_name} · {row.customer_phone}',f'/sales/orders/{row.order_number}')
-        for row in User.objects.filter(role=UserRole.CUSTOMER).filter(Q(full_name__icontains=query)|Q(phone__icontains=query)|Q(email__icontains=query)).order_by('-id')[:5]:
-            add('customer',row.id,row.full_name or row.phone or row.email or f'Customer #{row.id}',row.phone or row.email or '',f'/customers/{row.id}')
-        for row in Product.objects.filter(Q(name__icontains=query)|Q(sku__icontains=query)|Q(barcode__icontains=query)|Q(variants__sku__icontains=query)).distinct().order_by('-id')[:6]:
-            add('product',row.id,row.name,row.sku or 'Variable product',f'/catalog/products/{row.id}/edit')
-        for row in ProductVariant.objects.select_related('product').filter(Q(sku__icontains=query)|Q(barcode__icontains=query)|Q(product__name__icontains=query)).order_by('-id')[:4]:
-            add('variant',row.id,row.sku,row.product.name,f'/catalog/variants?product={row.product_id}')
-        for row in Supplier.objects.filter(Q(name__icontains=query)|Q(phone__icontains=query)|Q(email__icontains=query))[:4]:
-            add('supplier',row.id,row.name,row.phone or row.email or '',f'/procurement/suppliers?search={query}')
-        for row in Purchase.objects.select_related('supplier').filter(Q(purchase_number__icontains=query)|Q(supplier_invoice__icontains=query)|Q(supplier__name__icontains=query)).order_by('-id')[:4]:
-            add('purchase',row.id,row.purchase_number,row.supplier.name,f'/procurement/purchases/{row.id}')
-        for row in Coupon.objects.filter(code__icontains=query)[:3]:
-            add('coupon',row.id,row.code,row.coupon_type,'/marketing/coupons')
-        for row in Shipment.objects.select_related('order').filter(Q(tracking_code__icontains=query)|Q(order__order_number__icontains=query)|Q(courier__icontains=query)).order_by('-id')[:4]:
-            add('shipment',row.id,row.tracking_code or f'Shipment #{row.id}',f'{row.courier} · {row.order.order_number}','/sales/shipments')
+        if has_module_access(request.user,'orders'):
+            for row in Order.objects.filter(Q(order_number__icontains=query)|Q(customer_name__icontains=query)|Q(customer_phone__icontains=query)|Q(items__sku_snapshot__icontains=query)).distinct().order_by('-created_at')[:6]:
+                add('order',row.id,row.order_number,f'{row.customer_name} · {row.customer_phone}',f'/sales/orders/{row.order_number}')
+        if has_module_access(request.user,'customers'):
+            for row in User.objects.filter(role=UserRole.CUSTOMER).filter(Q(full_name__icontains=query)|Q(phone__icontains=query)|Q(email__icontains=query)).order_by('-id')[:5]:
+                add('customer',row.id,row.full_name or row.phone or row.email or f'Customer #{row.id}',row.phone or row.email or '',f'/customers/{row.id}')
+        if has_module_access(request.user,'catalog'):
+            for row in Product.objects.filter(Q(name__icontains=query)|Q(sku__icontains=query)|Q(barcode__icontains=query)|Q(variants__sku__icontains=query)).distinct().order_by('-id')[:6]:
+                add('product',row.id,row.name,row.sku or 'Variable product',f'/catalog/products/{row.id}/edit')
+            for row in ProductVariant.objects.select_related('product').filter(Q(sku__icontains=query)|Q(barcode__icontains=query)|Q(product__name__icontains=query)).order_by('-id')[:4]:
+                add('variant',row.id,row.sku,row.product.name,f'/catalog/variants?product={row.product_id}')
+        if has_module_access(request.user,'procurement'):
+            for row in Supplier.objects.filter(Q(name__icontains=query)|Q(phone__icontains=query)|Q(email__icontains=query))[:4]:
+                add('supplier',row.id,row.name,row.phone or row.email or '',f'/procurement/suppliers?search={query}')
+            for row in Purchase.objects.select_related('supplier').filter(Q(purchase_number__icontains=query)|Q(supplier_invoice__icontains=query)|Q(supplier__name__icontains=query)).order_by('-id')[:4]:
+                add('purchase',row.id,row.purchase_number,row.supplier.name,f'/procurement/purchases/{row.id}')
+        if has_module_access(request.user,'marketing'):
+            for row in Coupon.objects.filter(code__icontains=query)[:3]:
+                add('coupon',row.id,row.code,row.coupon_type,'/marketing/coupons')
+        if has_module_access(request.user,'shipping'):
+            for row in Shipment.objects.select_related('order').filter(Q(tracking_code__icontains=query)|Q(order__order_number__icontains=query)|Q(courier__icontains=query)).order_by('-id')[:4]:
+                add('shipment',row.id,row.tracking_code or f'Shipment #{row.id}',f'{row.courier} · {row.order.order_number}','/sales/shipments')
         return success(results)

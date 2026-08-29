@@ -3,12 +3,16 @@ from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User, Address
 from .utils import normalize_phone,PhoneFormatError
+from apps.accesscontrol.services import get_effective_modules
 
 class UserSerializer(serializers.ModelSerializer):
+    dashboard_modules = serializers.SerializerMethodField()
     class Meta:
         model = User
-        fields = ("id","uuid","full_name","email","phone","gender","date_of_birth","email_verified","phone_verified","role")
-        read_only_fields = ("uuid","email_verified","phone_verified","role")
+        fields = ("id","uuid","full_name","email","phone","gender","date_of_birth","email_verified","phone_verified","role","dashboard_modules")
+        read_only_fields = ("uuid","email_verified","phone_verified","role","dashboard_modules")
+    def get_dashboard_modules(self,obj):
+        return get_effective_modules(obj) if getattr(obj,"is_staff",False) else []
 
 class AddressSerializer(serializers.ModelSerializer):
     class Meta:

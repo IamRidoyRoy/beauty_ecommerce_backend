@@ -79,3 +79,36 @@ class HomepageBanner(models.Model):
 
     def __str__(self):
         return f"{self.get_slot_display()}: {self.title}"
+
+
+class AnnouncementItem(models.Model):
+    class Icon(models.TextChoices):
+        GIFT = "gift", "Gift"
+        BADGE = "badge", "Authenticity badge"
+        TRUCK = "truck", "Delivery truck"
+        SPARKLES = "sparkles", "Sparkles"
+        TAG = "tag", "Offer tag"
+
+    class LinkType(models.TextChoices):
+        NONE = "none", "No link"
+        CUSTOM = "custom", "Custom route / URL"
+        PRODUCTS = "products", "Products page"
+        CATEGORY = "category", "Category"
+        BRAND = "brand", "Brand"
+        PRODUCT = "product", "Product"
+        SEARCH = "search", "Search query"
+
+    text = models.CharField(max_length=220)
+    icon = models.CharField(max_length=16, choices=Icon.choices, default=Icon.SPARKLES)
+    link_type = models.CharField(max_length=16, choices=LinkType.choices, default=LinkType.NONE)
+    link_value = models.CharField(max_length=500, blank=True)
+    active = models.BooleanField(default=True, db_index=True)
+    order = models.PositiveIntegerField(default=0, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ("order", "id")
+
+    def __str__(self):
+        return self.text

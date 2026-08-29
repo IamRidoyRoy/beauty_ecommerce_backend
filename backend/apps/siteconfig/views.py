@@ -6,8 +6,8 @@ from rest_framework.views import APIView
 from apps.accounts.models import UserRole
 from apps.common.permissions import role_permission
 from apps.common.responses import success
-from .models import HomepageBanner, SiteBrandingSettings
-from .serializers import HomepageBannerSerializer, SiteBrandingSettingsSerializer
+from .models import AnnouncementItem, HomepageBanner, SiteBrandingSettings
+from .serializers import AnnouncementItemSerializer, HomepageBannerSerializer, SiteBrandingSettingsSerializer
 
 ManagementAdmin = role_permission(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.MANAGER)
 MarketingAdmin = role_permission(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.MANAGER, UserRole.MARKETING_MANAGER)
@@ -59,3 +59,18 @@ class HomepageBannerAdminViewSet(ModelViewSet):
     queryset = HomepageBanner.objects.all().order_by("slot")
     pagination_class = None
     http_method_names = ["get", "patch", "head", "options"]
+
+
+class AnnouncementItemPublicView(APIView):
+    permission_classes=[AllowAny]
+    def get(self,request):
+        rows=AnnouncementItem.objects.filter(active=True).order_by("order","id")
+        return success(AnnouncementItemSerializer(rows,many=True,context={"request":request}).data)
+
+
+class AnnouncementItemAdminViewSet(ModelViewSet):
+    permission_classes=[MarketingAdmin]
+    serializer_class=AnnouncementItemSerializer
+    queryset=AnnouncementItem.objects.all().order_by("order","id")
+    pagination_class=None
+    http_method_names=["get","post","patch","delete","head","options"]

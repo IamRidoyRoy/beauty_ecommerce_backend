@@ -17,3 +17,21 @@ class ProductImportTests(APITestCase):
         response=self.client.post("/api/v1/admin/products/import-file/",{"file":upload},format="multipart")
         self.assertEqual(response.status_code,200,response.data)
         self.assertTrue(Product.objects.filter(sku="SKU-1").exists())
+
+    def test_xlsx_import_updates_existing_product(self):
+        from openpyxl import Workbook
+        product=Product.objects.create(name="Old Cleanser",slug="old-cleanser",product_type="simple",sku="SKU-UP",brand=Brand.objects.get(name="CeraVe"),category=Category.objects.get(name="Skincare"),base_price=900,status="draft")
+        wb=Workbook();ws=wb.active;ws.title="Products"
+        ws.append(["product_id","name","product_type","sku","brand","category","base_price","status"])
+        ws.append([product.id,"Updated Cleanser","simple","SKU-UP","CeraVe","Skincare",1100,"active"])
+        buf=BytesIO();wb.save(buf);buf.seek(0)
+        upload=SimpleUploadedFile("products.xlsx",buf.getvalue(),content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        response=self.client.post("/api/v1/admin/products/import-file/",{"file":upload},format="multipart")
+        self.assertEqual(response.status_code,200,response.data)
+        product.refresh_from_db();self.assertEqual(product.name,"Updated Cleanser");self.assertEqual(product.base_price,1100);self.assertEqual(product.status,"active")
+
+    def test_product_export_returns_xlsx(self):
+        Product.objects.create(name="Export Cleanser",slug="export-cleanser",product_type="simple",sku="SKU-EXPORT",brand=Brand.objects.get(name="CeraVe"),category=Category.objects.get(name="Skincare"),base_price=1000,status="draft")
+        response=self.client.get("/api/v1/admin/products/export-file/")
+        self.assertEqual(response.status_code,200)
+        self.assertIn("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",response["Content-Type"])

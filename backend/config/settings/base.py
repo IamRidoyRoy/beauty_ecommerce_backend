@@ -72,4 +72,41 @@ CELERY_TASK_TIME_LIMIT = 30 * 60
 CELERY_BEAT_SCHEDULE = {
     "low-stock-hourly": {"task": "apps.notifications.tasks.low_stock_alerts", "schedule": 3600.0},
     "trending-every-6h": {"task": "apps.catalog.tasks.recalculate_trending", "schedule": 21600.0},
+    "payment-reconciliation-every-10m": {"task": "apps.payments.tasks.reconcile_open_gateway_payments", "schedule": 600.0},
+    "courier-auto-book-every-minute": {"task": "apps.shipping.tasks.auto_book_courier_orders", "schedule": 60.0},
+    "courier-tracking-sync-every-5m": {"task": "apps.shipping.tasks.sync_courier_shipments", "schedule": 300.0},
 }
+
+
+# Payment gateway configuration -------------------------------------------------
+PAYMENT_GATEWAY_TIMEOUT = int(os.getenv("PAYMENT_GATEWAY_TIMEOUT", "20"))
+PAYMENT_CONFIG_ENCRYPTION_KEY = os.getenv("PAYMENT_CONFIG_ENCRYPTION_KEY", "")
+PAYMENT_API_BASE_URL = os.getenv("PAYMENT_API_BASE_URL", "").rstrip("/")
+PAYMENT_STOREFRONT_URL = os.getenv("PAYMENT_STOREFRONT_URL", "").rstrip("/")
+
+SSLCOMMERZ_SANDBOX = os.getenv("SSLCOMMERZ_SANDBOX", "true").lower() == "true"
+SSLCOMMERZ_STORE_ID = os.getenv("SSLCOMMERZ_STORE_ID", "")
+SSLCOMMERZ_STORE_PASSWORD = os.getenv("SSLCOMMERZ_STORE_PASSWORD", "")
+
+BKASH_SANDBOX = os.getenv("BKASH_SANDBOX", "true").lower() == "true"
+BKASH_BASE_URL = os.getenv("BKASH_BASE_URL", "")
+BKASH_APP_KEY = os.getenv("BKASH_APP_KEY", "")
+BKASH_APP_SECRET = os.getenv("BKASH_APP_SECRET", "")
+BKASH_USERNAME = os.getenv("BKASH_USERNAME", "")
+BKASH_PASSWORD = os.getenv("BKASH_PASSWORD", "")
+
+NAGAD_SANDBOX = os.getenv("NAGAD_SANDBOX", "true").lower() == "true"
+NAGAD_BASE_URL = os.getenv("NAGAD_BASE_URL", "")
+NAGAD_MERCHANT_ID = os.getenv("NAGAD_MERCHANT_ID", "")
+NAGAD_MERCHANT_NUMBER = os.getenv("NAGAD_MERCHANT_NUMBER", "")
+NAGAD_MERCHANT_PRIVATE_KEY = os.getenv("NAGAD_MERCHANT_PRIVATE_KEY", "")
+NAGAD_GATEWAY_PUBLIC_KEY = os.getenv("NAGAD_GATEWAY_PUBLIC_KEY", "")
+NAGAD_CLIENT_IP = os.getenv("NAGAD_CLIENT_IP", "")
+NAGAD_API_VERSION = os.getenv("NAGAD_API_VERSION", "v-0.2.0")
+NAGAD_CLIENT_TYPE = os.getenv("NAGAD_CLIENT_TYPE", "PC_WEB")
+NAGAD_CURRENCY_CODE = os.getenv("NAGAD_CURRENCY_CODE", "050")
+
+
+# Courier automation configuration ------------------------------------------------
+COURIER_API_TIMEOUT = int(os.getenv("COURIER_API_TIMEOUT", "20"))
+COURIER_CONFIG_ENCRYPTION_KEY = os.getenv("COURIER_CONFIG_ENCRYPTION_KEY", "")

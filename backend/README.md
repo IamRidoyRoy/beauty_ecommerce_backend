@@ -84,7 +84,7 @@ Query-heavy read paths and reports live in `selectors.py` and use `select_relate
 
 ## External providers
 
-Pathao, Steadfast, RedX and Google auth are explicit adapter extension points. The repository does not pretend to call live providers without credentials. Payment webhooks have an idempotency event table/service boundary ready for provider-specific signature verification and mapping.
+Pathao, Steadfast, RedX, CarryBee and Google auth are explicit adapter extension points. The repository does not pretend to call live providers without credentials. Payment webhooks have an idempotency event table/service boundary ready for provider-specific signature verification and mapping.
 
 ## Migrations note
 

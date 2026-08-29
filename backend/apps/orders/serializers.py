@@ -39,6 +39,13 @@ class CheckoutSerializer(serializers.Serializer):
         except PhoneFormatError as exc:
             raise serializers.ValidationError(str(exc))
 
+    def validate_payment_method(self, value):
+        from apps.payments.gateway_config import is_payment_method_available
+
+        if not is_payment_method_available(value):
+            raise serializers.ValidationError("This payment method is currently unavailable.")
+        return value
+
     def validate(self, attrs):
         if attrs["thana"].city_id != attrs["district"].id:
             raise serializers.ValidationError({"thana": "Selected thana does not belong to the selected district."})
@@ -138,7 +145,23 @@ class AdminOrderItemSerializer(PublicOrderItemSerializer):
 class OrderSerializer(serializers.ModelSerializer):
     items = PublicOrderItemSerializer(many=True, read_only=True)
     payments = PublicPaymentSerializer(many=True, read_only=True)
+    shipments = serializers.SerializerMethodField()
     shipping_method_name = serializers.CharField(source="shipping_method.name", read_only=True)
+
+    def get_shipments(self, obj):
+        return [
+            {
+                "id": row.id,
+                "courier": row.courier,
+                "tracking_code": row.tracking_code,
+                "status": row.status,
+                "provider_status": getattr(row, "provider_status", ""),
+                "last_synced_at": getattr(row, "last_synced_at", None),
+                "booked_at": getattr(row, "booked_at", None),
+                "delivered_at": getattr(row, "delivered_at", None),
+            }
+            for row in obj.shipments.all()
+        ]
 
     class Meta:
         model = Order
@@ -147,14 +170,18 @@ class OrderSerializer(serializers.ModelSerializer):
             "shipping_address_snapshot", "shipping_method", "shipping_method_name",
             "coupon_code_snapshot", "promotion_snapshot", "subtotal", "discount",
             "shipping_charge", "tax", "total", "order_status", "payment_status",
-            "fulfillment_status", "notes", "items", "payments", "created_at", "updated_at",
+            "fulfillment_status", "notes", "items", "payments", "shipments", "created_at", "updated_at",
         )
 
 
 class AdminOrderSerializer(serializers.ModelSerializer):
     items = AdminOrderItemSerializer(many=True, read_only=True)
     payments = PublicPaymentSerializer(many=True, read_only=True)
+    shipments = serializers.SerializerMethodField()
     shipping_method_name = serializers.CharField(source="shipping_method.name", read_only=True)
+
+    def get_shipments(self, obj):
+        return OrderSerializer(context=self.context).get_shipments(obj)
 
     class Meta:
         model = Order
@@ -163,7 +190,7 @@ class AdminOrderSerializer(serializers.ModelSerializer):
             "shipping_address_snapshot", "shipping_method", "shipping_method_name",
             "coupon_code_snapshot", "promotion_snapshot", "subtotal", "discount",
             "shipping_charge", "tax", "total", "order_status", "payment_status",
-            "fulfillment_status", "notes", "items", "payments", "created_at", "updated_at",
+            "fulfillment_status", "notes", "items", "payments", "shipments", "created_at", "updated_at",
         )
 
 

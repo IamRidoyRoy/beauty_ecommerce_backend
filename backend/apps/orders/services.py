@@ -369,6 +369,18 @@ ORDER_LIFECYCLE=(
 )
 
 
+def _queue_auto_courier_booking(order_id: int) -> None:
+    """Best-effort near-real-time courier booking trigger after an order transaction commits."""
+    def enqueue():
+        try:
+            from apps.shipping.tasks import auto_book_courier_order
+            auto_book_courier_order.delay(order_id)
+        except Exception:
+            # The periodic courier auto-book scan is the durable fallback when the broker/worker is unavailable.
+            pass
+    transaction.on_commit(enqueue)
+
+
 def _apply_order_status(*,order,new_status,actor=None):
     if new_status==Order.Status.CANCELLED:
         for item in order.items.all():
@@ -413,6 +425,7 @@ def transition_order(*,order,new_status,actor=None):
         raise ValidationError({"order_status":f"Invalid transition {order.order_status} → {new_status}."})
     _apply_order_status(order=order,new_status=new_status,actor=actor)
     order.save(update_fields=["order_status","payment_status","fulfillment_status","updated_at"])
+    _queue_auto_courier_booking(order.id)
     return order
 
 
@@ -452,4 +465,5 @@ def transition_order_to_status(*,order,new_status,actor=None):
         _apply_order_status(order=order,new_status=step_status,actor=actor)
 
     order.save(update_fields=["order_status","payment_status","fulfillment_status","updated_at"])
+    _queue_auto_courier_booking(order.id)
     return order

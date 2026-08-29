@@ -248,12 +248,17 @@ def send_meta_event(
         return {"sent": False, "error": str(exc)}
 
 
-def send_purchase_for_order(*, order, request=None) -> dict[str, Any]:
+def send_purchase_for_order(*, order, request=None, attribution: dict[str, Any] | None = None) -> dict[str, Any]:
     settings = TrackingSettings.current()
     event_id = f"purchase:{order.order_number}"
-    source_url = ""
+    attribution = attribution or {}
+    source_url = str(attribution.get("event_source_url") or "")
+    fbp = str(attribution.get("fbp") or "")
+    fbc = str(attribution.get("fbc") or "")
     if request is not None:
         source_url = request.data.get("event_source_url", "") or request.META.get("HTTP_REFERER", "")
+        fbp = request.data.get("fbp", "") or fbp
+        fbc = request.data.get("fbc", "") or fbc
     return send_meta_event(
         event_name="Purchase",
         event_id=event_id,
@@ -263,7 +268,7 @@ def send_purchase_for_order(*, order, request=None) -> dict[str, Any]:
         user=order.user,
         email=getattr(order.user, "email", "") or "",
         phone=order.customer_phone,
-        fbp=(request.data.get("fbp", "") if request is not None else ""),
-        fbc=(request.data.get("fbc", "") if request is not None else ""),
+        fbp=fbp,
+        fbc=fbc,
         order_number=order.order_number,
     )
